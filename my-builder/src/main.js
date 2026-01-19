@@ -1,7 +1,8 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
-
+const { ipcMain } = require('electron');
+const fs = require('fs');
 
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -15,7 +16,7 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.js'), // Basicamente diz: Quando carregar a tela, carregue esse script de segurança antes de qualquer coisa.
     },
   });
 
@@ -28,14 +29,30 @@ const createWindow = () => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
+
+  
 };
+
+async function handleCreatePasta(nome) {
+  fs.mkdirSync(`./projetos/a`);
+  return 'Pasta criada com sucesso!'; // Retorna uma mensagem de sucesso para o renderer.js
+}
+
+
+const lis = (event, t) => {
+  console.log('Mensagem recebida no main.js via preload.js:', t);
+  
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow();
+  ipcMain.handle('criar-pasta', handleCreatePasta); // Desempacota a variável do canal 'criar-pasta' e a recebe no main.js
 
+  ipcMain.on('canal-teste', lis);
+  createWindow();
+  
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   app.on('activate', () => {

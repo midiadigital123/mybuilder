@@ -3,11 +3,190 @@
   <head>
     <meta charset="UTF-8" />
     <title>Hello World!</title>
+    <link rel="stylesheet" href="src/renderer/style.css">
 
   </head>
   <body>
-    <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
+    <main class="container">
+        <header>
+            <h1>Novo Projeto de Curso</h1>
+            <p>Defina a estrutura e identidade do seu ambiente de aprendizado.</p>
+        </header>
+
+        <form id="project-form">
+            
+            <!-- SEÇÃO 1: DADOS GERAIS -->
+            <section class="card">
+                <h2>1. Informações Gerais</h2>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="courseName">Nome do Curso</label>
+                        <input type="text" id="courseName" name="courseName" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="courseWorkload">Carga Horária</label>
+                        <input type="text" id="courseWorkload" name="courseWorkload" placeholder="Ex: 40h">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="moodleId">ID do Moodle</label>
+                        <input type="number" id="moodleId" name="moodleId">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="moodleUrl">URL do Moodle</label>
+                        <input type="url" id="moodleUrl" name="moodleUrl" placeholder="https://...">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="className">Classe de Encapsulamento</label>
+                        <input type="text" id="className" name="className" placeholder="Ex: CursoAlunoX">
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 2: ESQUEMA DE CORES (VARIÁVEIS) -->
+            <section class="card">
+                <h2>2. Identidade Visual (CSS Variables)</h2>
+                <p class="hint">Defina os códigos Hexadecimais para o tema Light (Claro) e Dark (Escuro).</p>
+                
+                <!-- Base Colors -->
+                <h3>Base</h3>
+                <div class="color-grid">
+                    <div class="input-group">
+                        <label>Base 1 Light</label>
+                        <input type="color" name="base1-light" value="#ffffff" colorspace="hsl()"> >
+                    </div>
+                    <div class="input-group">
+                        <label>Base 1 Dark</label>
+                        <input type="color" name="base1-dark" value="#000000">
+                    </div>
+                    <div class="input-group">
+                        <label>Base 2 Light</label>
+                        <input type="color" name="base2-light" value="#f0f0f0">
+                    </div>
+                    <div class="input-group">
+                        <label>Base 2 Dark</label>
+                        <input type="color" name="base2-dark" value="#1a1a1a">
+                    </div>
+                </div>
+
+                <!-- Intermediária 1 -->
+                <h3>Intermediária 1</h3>
+                <div class="color-grid">
+                    <div class="input-group">
+                        <label>Int 1 Light</label>
+                        <input type="color" name="intermediaria1-light" value="#e0e0e0">
+                    </div>
+                    <div class="input-group">
+                        <label>Int 1 Dark</label>
+                        <input type="color" name="intermediaria1-dark" value="#2c2c2c">
+                    </div>
+                    <div class="input-group">
+                        <label>Int 1 Bg Light</label>
+                        <input type="color" name="intermediaria1-background-light" value="#d4d4d4">
+                    </div>
+                    <div class="input-group">
+                        <label>Int 1 Bg Dark</label>
+                        <input type="color" name="intermediaria1-background-dark" value="#333333">
+                    </div>
+                </div>
+
+                <!-- Intermediária 2 -->
+                <h3>Intermediária 2</h3>
+                <div class="color-grid">
+                    <div class="input-group">
+                        <label>Int 2 Light</label>
+                        <input type="color" name="intermediaria2-light" value="#d0d0d0">
+                    </div>
+                    <div class="input-group">
+                        <label>Int 2 Dark</label>
+                        <input type="color" name="intermediaria2-dark" value="#3a3a3a">
+                    </div>
+                    <div class="input-group">
+                        <label>Int 2 Bg Light</label>
+                        <input type="color" name="intermediaria2-background-light" value="#c5c5c5">
+                    </div>
+                    <div class="input-group">
+                        <label>Int 2 Bg Dark</label>
+                        <input type="color" name="intermediaria2-background-dark" value="#404040">
+                    </div>
+                </div>
+
+                <!-- Intermediária 3 -->
+                <h3>Intermediária 3</h3>
+                <div class="color-grid">
+                    <div class="input-group">
+                        <label>Int 3 Light</label>
+                        <input type="color" name="intermediaria3-light" value="#b0b0b0">
+                    </div>
+                    <div class="input-group">
+                        <label>Int 3 Dark</label>
+                        <input type="color" name="intermediaria3-dark" value="#4d4d4d">
+                    </div>
+                    <div class="input-group">
+                        <label>Int 3 Bg Light</label>
+                        <input type="color" name="intermediaria3-background-light" value="#a5a5a5">
+                    </div>
+                    <div class="input-group">
+                        <label>Int 3 Bg Dark</label>
+                        <input type="color" name="intermediaria3-background-dark" value="#555555">
+                    </div>
+                </div>
+
+                <!-- Active States -->
+                <h3>Estados de Ação (Active)</h3>
+                <div class="color-grid">
+                    <div class="input-group">
+                        <label>Active Light</label>
+                        <input type="color" name="active-light" value="#007bff">
+                    </div>
+                    <div class="input-group">
+                        <label>Active Dark</label>
+                        <input type="color" name="active-dark" value="#0056b3">
+                    </div>
+                    <div class="input-group">
+                        <label>Hover Light</label>
+                        <input type="color" name="active-hover-light" value="#0056b3">
+                    </div>
+                    <div class="input-group">
+                        <label>Hover Dark</label>
+                        <input type="color" name="active-hover-dark" value="#003d82">
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEÇÃO 3: ASSETS (IMAGENS) -->
+            <section class="card">
+                <h2>3. Assets do Projeto</h2>
+                <p class="hint">Selecione as imagens dos cards do projeto.</p>
+                
+                <div class="upload-zone">
+                    <label for="cardImages">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span>Clique para selecionar imagens</span>
+                        <small class="limit-warning">Máximo 15 imagens</small>
+                    </label>
+                    <!-- 'multiple' permite selecionar vários de uma vez -->
+                    <input type="file" id="cardImages" name="cardImages" multiple accept="image/*">
+                </div>
+                <!-- Elemento ul será usado pelo JS depois para mostrar os nomes -->
+                <ul id="file-list" class="file-list"></ul>
+            </section>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Gerar Estrutura</button>
+            </div>
+        </form>
+    </main>
+
+    
+    
     <script type="module" src="src/renderer.js"></script>
   </body>
 </html>

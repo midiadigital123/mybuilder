@@ -31,3 +31,11 @@ import './index.css';
 console.log(
   '👋 This message is being logged by "renderer.js", included via Vite',
 );
+
+
+const btn = document.getElementById('myButton');
+
+btn.addEventListener('click', () => {
+  let t = 'Teste de comunicação entre renderer e main via preload.js';
+    window.api.teste(t);
+});
