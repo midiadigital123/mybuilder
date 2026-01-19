@@ -1,9 +1,8 @@
-import { app, BrowserWindow } from 'electron';
-import path from 'node:path';
-import started from 'electron-squirrel-startup';
-const { ipcMain } = require('electron');
-const fs = require('fs');
-
+import { app, BrowserWindow } from "electron";
+import path from "node:path";
+import started from "electron-squirrel-startup";
+const { ipcMain } = require("electron");
+const fs = require("fs");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -16,7 +15,7 @@ const createWindow = () => {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'), // Basicamente diz: Quando carregar a tela, carregue esse script de segurança antes de qualquer coisa.
+      preload: path.join(__dirname, "preload.js"), // Basicamente diz: Quando carregar a tela, carregue esse script de segurança antes de qualquer coisa.
     },
   });
 
@@ -24,38 +23,56 @@ const createWindow = () => {
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
-    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
+    mainWindow.loadFile(
+      path.join(__dirname, `./${MAIN_WINDOW_VITE_NAME}/index.html`),
+    );
   }
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
-
-  
 };
 
-async function handleCreatePasta(nome) {
-  fs.mkdirSync(`./projetos/a`);
-  return 'Pasta criada com sucesso!'; // Retorna uma mensagem de sucesso para o renderer.js
-}
 
 
-const lis = (event, t) => {
-  console.log('Mensagem recebida no main.js via preload.js:', t);
-  
-}
+const handleGetClipboardText = async () => {
+  const { clipboard } = require("electron");
+  return clipboard.readText();
+};
+
+const handleSalvarImagem = async (event, nomeArquivo, buffer) => {
+    const pastaDestino = path.join(__dirname, 'downloads'); // Define a pasta de destino para salvar a imagem
+
+    // Garante que a pasta existe
+    if (!fs.existsSync(pastaDestino)) {
+      fs.mkdirSync(pastaDestino, { recursive: true });
+    }
+
+    const caminhoCompleto = path.join(pastaDestino, nomeArquivo);
+
+    // fs.writeFile aceita Buffer nativamente
+    try {
+      fs.writeFileSync(caminhoCompleto, buffer);
+      return true;
+    } catch (erro) {
+      console.error("Erro ao salvar imagem:", erro);
+      return false;
+    }
+  };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  ipcMain.handle('criar-pasta', handleCreatePasta); // Desempacota a variável do canal 'criar-pasta' e a recebe no main.js
 
-  ipcMain.on('canal-teste', lis);
+  ipcMain.handle("get-clipboard-text", handleGetClipboardText);
+
+  ipcMain.handle("upload:salvar-imagem", handleSalvarImagem);
+
   createWindow();
-  
+
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  app.on('activate', () => {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
     }
@@ -65,8 +82,8 @@ app.whenReady().then(() => {
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });

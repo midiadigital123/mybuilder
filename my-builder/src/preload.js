@@ -4,8 +4,12 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
-    teste: (t) => {
-        ipcRenderer.send('canal-teste', t);
-    }
+   
+    getClipboardText: () => {
+        return ipcRenderer.invoke('get-clipboard-text');
+    },
+    salvarArquivo: 
+    (nome, buffer) => 
+        ipcRenderer.invoke('upload:salvar-imagem', nome, buffer)
 })
 

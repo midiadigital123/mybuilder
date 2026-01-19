@@ -46,116 +46,154 @@
                 </div>
             </section>
 
-            <!-- SEÇÃO 2: ESQUEMA DE CORES (VARIÁVEIS) -->
-            <section class="card">
-                <h2>2. Identidade Visual (CSS Variables)</h2>
-                <p class="hint">Defina os códigos Hexadecimais para o tema Light (Claro) e Dark (Escuro).</p>
-                
-                <!-- Base Colors -->
-                <h3>Base</h3>
-                <div class="color-grid">
-                    <div class="input-group">
-                        <label>Base 1 Light</label>
-                        <input type="color" name="base1-light" value="#ffffff" colorspace="hsl()"> >
-                    </div>
-                    <div class="input-group">
-                        <label>Base 1 Dark</label>
-                        <input type="color" name="base1-dark" value="#000000">
-                    </div>
-                    <div class="input-group">
-                        <label>Base 2 Light</label>
-                        <input type="color" name="base2-light" value="#f0f0f0">
-                    </div>
-                    <div class="input-group">
-                        <label>Base 2 Dark</label>
-                        <input type="color" name="base2-dark" value="#1a1a1a">
-                    </div>
-                </div>
+<!-- SEÇÃO 2: ESQUEMA DE CORES (CARDS MODERNOS) -->
+<section class="card">
+    <h2>2. Identidade Visual</h2>
+    <p class="hint">
+        <strong>Interação:</strong> Clique em qualquer cartão para colar o código Hex da sua área de transferência.
+    </p>
 
-                <!-- Intermediária 1 -->
-                <h3>Intermediária 1</h3>
-                <div class="color-grid">
-                    <div class="input-group">
-                        <label>Int 1 Light</label>
-                        <input type="color" name="intermediaria1-light" value="#e0e0e0">
-                    </div>
-                    <div class="input-group">
-                        <label>Int 1 Dark</label>
-                        <input type="color" name="intermediaria1-dark" value="#2c2c2c">
-                    </div>
-                    <div class="input-group">
-                        <label>Int 1 Bg Light</label>
-                        <input type="color" name="intermediaria1-background-light" value="#d4d4d4">
-                    </div>
-                    <div class="input-group">
-                        <label>Int 1 Bg Dark</label>
-                        <input type="color" name="intermediaria1-background-dark" value="#333333">
-                    </div>
-                </div>
+    <!-- Grupo: Base -->
+    <h3>Base</h3>
+    <div class="color-grid">
+        
+        <!-- Card 1 -->
+        <div class="color-card" data-var="base1-light" data-hex="#ffffff">
+            <div class="color-preview" style="background-color: #ffffff;"></div>
+            <div class="color-details">
+                <span class="label">Base 1 Light</span>
+                <span class="hex">#ffffff</span>
+            </div>
+        </div>
 
-                <!-- Intermediária 2 -->
-                <h3>Intermediária 2</h3>
-                <div class="color-grid">
-                    <div class="input-group">
-                        <label>Int 2 Light</label>
-                        <input type="color" name="intermediaria2-light" value="#d0d0d0">
-                    </div>
-                    <div class="input-group">
-                        <label>Int 2 Dark</label>
-                        <input type="color" name="intermediaria2-dark" value="#3a3a3a">
-                    </div>
-                    <div class="input-group">
-                        <label>Int 2 Bg Light</label>
-                        <input type="color" name="intermediaria2-background-light" value="#c5c5c5">
-                    </div>
-                    <div class="input-group">
-                        <label>Int 2 Bg Dark</label>
-                        <input type="color" name="intermediaria2-background-dark" value="#404040">
-                    </div>
-                </div>
+        <!-- Card 2 -->
+        <div class="color-card" data-var="base1-dark" data-hex="#000000">
+            <div class="color-preview" style="background-color: #000000;"></div>
+            <div class="color-details">
+                <span class="label">Base 1 Dark</span>
+                <span class="hex">#000000</span>
+            </div>
+        </div>
 
-                <!-- Intermediária 3 -->
-                <h3>Intermediária 3</h3>
-                <div class="color-grid">
-                    <div class="input-group">
-                        <label>Int 3 Light</label>
-                        <input type="color" name="intermediaria3-light" value="#b0b0b0">
-                    </div>
-                    <div class="input-group">
-                        <label>Int 3 Dark</label>
-                        <input type="color" name="intermediaria3-dark" value="#4d4d4d">
-                    </div>
-                    <div class="input-group">
-                        <label>Int 3 Bg Light</label>
-                        <input type="color" name="intermediaria3-background-light" value="#a5a5a5">
-                    </div>
-                    <div class="input-group">
-                        <label>Int 3 Bg Dark</label>
-                        <input type="color" name="intermediaria3-background-dark" value="#555555">
-                    </div>
-                </div>
+        <!-- Card 3 -->
+        <div class="color-card" data-var="base2-light" data-hex="#f0f0f0">
+            <div class="color-preview" style="background-color: #f0f0f0;"></div>
+            <div class="color-details">
+                <span class="label">Base 2 Light</span>
+                <span class="hex">#f0f0f0</span>
+            </div>
+        </div>
 
-                <!-- Active States -->
-                <h3>Estados de Ação (Active)</h3>
-                <div class="color-grid">
-                    <div class="input-group">
-                        <label>Active Light</label>
-                        <input type="color" name="active-light" value="#007bff">
-                    </div>
-                    <div class="input-group">
-                        <label>Active Dark</label>
-                        <input type="color" name="active-dark" value="#0056b3">
-                    </div>
-                    <div class="input-group">
-                        <label>Hover Light</label>
-                        <input type="color" name="active-hover-light" value="#0056b3">
-                    </div>
-                    <div class="input-group">
-                        <label>Hover Dark</label>
-                        <input type="color" name="active-hover-dark" value="#003d82">
-                    </div>
-                </div>
-            </section>
+        <!-- Card 4 -->
+        <div class="color-card" data-var="base2-dark" data-hex="#1a1a1a">
+            <div class="color-preview" style="background-color: #1a1a1a;"></div>
+            <div class="color-details">
+                <span class="label">Base 2 Dark</span>
+                <span class="hex">#1a1a1a</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grupo: Intermediária 1 -->
+    <h3>Intermediária 1</h3>
+    <div class="color-grid">
+        <!-- Card 5 -->
+        <div class="color-card" data-var="intermediaria1-light" data-hex="#e0e0e0">
+            <div class="color-preview" style="background-color: #e0e0e0;"></div>
+            <div class="color-details">
+                <span class="label">Int 1 Light</span>
+                <span class="hex">#e0e0e0</span>
+            </div>
+        </div>
+
+        <div class="color-card" data-var="intermediaria1-dark" data-hex="#2c2c2c">
+            <div class="color-preview" style="background-color: #2c2c2c;"></div>
+            <div class="color-details">
+                <span class="label">Int 1 Dark</span>
+                <span class="hex">#2c2c2c</span>
+            </div>
+        </div>
+
+        <div class="color-card" data-var="intermediaria1-background-light" data-hex="#d4d4d4">
+            <div class="color-preview" style="background-color: #d4d4d4;"></div>
+            <div class="color-details">
+                <span class="label">Int 1 Bg Light</span>
+                <span class="hex">#d4d4d4</span>
+            </div>
+        </div>
+
+        <div class="color-card" data-var="intermediaria1-background-dark" data-hex="#333333">
+            <div class="color-preview" style="background-color: #333333;"></div>
+            <div class="color-details">
+                <span class="label">Int 1 Bg Dark</span>
+                <span class="hex">#333333</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grupo: Intermediária 2 -->
+    <h3>Intermediária 2</h3>
+    <div class="color-grid">
+        <div class="color-card" data-var="intermediaria2-light" data-hex="#d0d0d0">
+            <div class="color-preview" style="background-color: #d0d0d0;"></div>
+            <div class="color-details"><span class="label">Int 2 Light</span><span class="hex">#d0d0d0</span></div>
+        </div>
+        <div class="color-card" data-var="intermediaria2-dark" data-hex="#3a3a3a">
+            <div class="color-preview" style="background-color: #3a3a3a;"></div>
+            <div class="color-details"><span class="label">Int 2 Dark</span><span class="hex">#3a3a3a</span></div>
+        </div>
+        <div class="color-card" data-var="intermediaria2-background-light" data-hex="#c5c5c5">
+            <div class="color-preview" style="background-color: #c5c5c5;"></div>
+            <div class="color-details"><span class="label">Int 2 Bg Light</span><span class="hex">#c5c5c5</span></div>
+        </div>
+        <div class="color-card" data-var="intermediaria2-background-dark" data-hex="#404040">
+            <div class="color-preview" style="background-color: #404040;"></div>
+            <div class="color-details"><span class="label">Int 2 Bg Dark</span><span class="hex">#404040</span></div>
+        </div>
+    </div>
+
+    <!-- Grupo: Intermediária 3 -->
+    <h3>Intermediária 3</h3>
+    <div class="color-grid">
+        <div class="color-card" data-var="intermediaria3-light" data-hex="#b0b0b0">
+            <div class="color-preview" style="background-color: #b0b0b0;"></div>
+            <div class="color-details"><span class="label">Int 3 Light</span><span class="hex">#b0b0b0</span></div>
+        </div>
+        <div class="color-card" data-var="intermediaria3-dark" data-hex="#4d4d4d">
+            <div class="color-preview" style="background-color: #4d4d4d;"></div>
+            <div class="color-details"><span class="label">Int 3 Dark</span><span class="hex">#4d4d4d</span></div>
+        </div>
+        <div class="color-card" data-var="intermediaria3-background-light" data-hex="#a5a5a5">
+            <div class="color-preview" style="background-color: #a5a5a5;"></div>
+            <div class="color-details"><span class="label">Int 3 Bg Light</span><span class="hex">#a5a5a5</span></div>
+        </div>
+        <div class="color-card" data-var="intermediaria3-background-dark" data-hex="#555555">
+            <div class="color-preview" style="background-color: #555555;"></div>
+            <div class="color-details"><span class="label">Int 3 Bg Dark</span><span class="hex">#555555</span></div>
+        </div>
+    </div>
+
+    <!-- Grupo: Active States -->
+    <h3>Active & Hover</h3>
+    <div class="color-grid">
+        <div class="color-card" data-var="active-light" data-hex="#007bff">
+            <div class="color-preview" style="background-color: #007bff;"></div>
+            <div class="color-details"><span class="label">Active Light</span><span class="hex">#007bff</span></div>
+        </div>
+        <div class="color-card" data-var="active-dark" data-hex="#0056b3">
+            <div class="color-preview" style="background-color: #0056b3;"></div>
+            <div class="color-details"><span class="label">Active Dark</span><span class="hex">#0056b3</span></div>
+        </div>
+        <div class="color-card" data-var="active-hover-light" data-hex="#0056b3">
+            <div class="color-preview" style="background-color: #0056b3;"></div>
+            <div class="color-details"><span class="label">Hover Light</span><span class="hex">#0056b3</span></div>
+        </div>
+        <div class="color-card" data-var="active-hover-dark" data-hex="#003d82">
+            <div class="color-preview" style="background-color: #003d82;"></div>
+            <div class="color-details"><span class="label">Hover Dark</span><span class="hex">#003d82</span></div>
+        </div>
+    </div>
+</section>
 
             <!-- SEÇÃO 3: ASSETS (IMAGENS) -->
             <section class="card">
@@ -180,7 +218,7 @@
             </section>
 
             <div class="form-actions">
-                <button type="submit" class="btn-primary">Gerar Estrutura</button>
+                <button id="btnGerar" type="submit" class="btn-primary">Gerar Estrutura</button>
             </div>
         </form>
     </main>
