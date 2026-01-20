@@ -1,16 +1,5 @@
-:root {
-    /* Tokens do Próprio Formulário */
-    --bg-app: #121212;
-    --surface: #1e1e1e;
-    --border: #333333;
-    --text-main: #e0e0e0;
-    --text-muted: #a0a0a0;
-    --primary: #b9e600;
-    --primary-hover: #9cc300;
-    --gap: 20px;
-    
-}
 
+@import './variables.css';
 
 * {
     box-sizing: border-box;
@@ -86,24 +75,8 @@ header p {
     gap: var(--gap);
 }
 
-/* Layout Específico para Cores (4 colunas para compactação) */
-.color-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 15px;
-    margin-bottom: 15px;
-    background: rgba(255,255,255,0.03);
-    padding: 15px;
-    border-radius: 6px;
-}
 
-.item-color{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid white;
-}
+
 .input-group {
     display: flex;
     flex-direction: column;
@@ -155,55 +128,6 @@ input[type="color"]::-webkit-color-swatch {
     border-radius: 4px;
 }
 
-/* Área de Upload */
-.upload-zone {
-    border: 2px dashed var(--border);
-    border-radius: 8px;
-    padding: 40px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.upload-zone:hover {
-    border-color: var(--primary);
-    background-color: rgba(59, 130, 246, 0.05);
-}
-
-.upload-zone input[type="file"] {
-    display: none; /* Esconde o input padrão feio */
-}
-
-.upload-zone svg {
-    color: var(--text-muted);
-    margin-bottom: 10px;
-}
-
-.upload-zone span {
-    display: block;
-    color: var(--text-main);
-    font-weight: 500;
-}
-
-.limit-warning {
-    display: block;
-    margin-top: 5px;
-    color: var(--text-muted);
-    font-size: 0.8rem;
-}
-
-/* Lista de Arquivos (Placeholders) */
-.file-list {
-    margin-top: 15px;
-    list-style: none;
-}
-
-.file-list li {
-    padding: 8px;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.9rem;
-    color: var(--text-muted);
-}
 
 /* Botão de Ação */
 .form-actions {
@@ -228,98 +152,3 @@ input[type="color"]::-webkit-color-swatch {
     background-color: var(--primary-hover);
 }
 
-/* Layout Grid Moderno */
-.color-grid {
-    display: grid;
-    /* Cria uma coluna que se ajusta automaticamente, largura mínima de 140px */
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-/* O Cartão Interativo */
-.color-card {
-    background-color: var(--surface); /* Fundo do cartão (cinza levemente mais claro que o app) */
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer; /* Indica que é clicável */
-    transition: transform 0.2s, border-color 0.2s;
-    position: relative;
-    
-}
-
-/* Efeito de Hover (Passar o mouse) */
-.color-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--primary);
-    /* background-color: var(--primary-hover); */
-}
-
-/* O Círculo de Cor (Preview) */
-.color-preview {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%; /* Círculo perfeito */
-    border: 2px solid rgba(255,255,255,0.1);
-    margin-bottom: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    transition: transform 0.2s;
-}
-
-/* Animação sutil no círculo ao passar o mouse */
-.color-card:hover .color-preview {
-    transform: scale(1.1);
-}
-
-/* Detalhes do Cartão (Texto) */
-.color-details {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 10px;
-}
-
-.color-details .label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    font-weight: 600;
-    margin-bottom: 4px;
-    line-height: 1.2;
-}
-
-.color-details .hex {
-    font-family: 'Courier New', Courier, monospace; /* Fonte de código */
-    font-size: 0.85rem;
-    color: var(--text-main);
-    background-color: rgb(126 126 126 / 30%);
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-/* Ícone de Clipboard opcional (Puro CSS para indicar ação) */
-.color-card::after {
-    content: "Clique para colar";
-    position: absolute;
-    top: 90%;
-    right: 50%;
-    transform: translateX(50%);
-    font-size: 13px;
-    color: black;
-    opacity: 0;
-    transition: opacity 0.2s;
-    background-color: var(--primary);
-    padding: 2px 6px;
-    border-radius: 4px;
-    width: max-content;
-}
-
-.color-card:hover::after {
-    opacity: 1;
-}

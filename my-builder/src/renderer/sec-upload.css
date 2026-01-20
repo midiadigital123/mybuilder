@@ -1,0 +1,49 @@
+/* Área de Upload */
+.upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.upload-zone:hover {
+    border-color: var(--primary);
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.upload-zone input[type="file"] {
+    display: none; /* Esconde o input padrão feio */
+}
+
+.upload-zone svg {
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.upload-zone span {
+    display: block;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.limit-warning {
+    display: block;
+    margin-top: 5px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Lista de Arquivos (Placeholders) */
+.file-list {
+    margin-top: 15px;
+    list-style: none;
+}
+
+.file-list li {
+    padding: 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}

@@ -8,8 +8,12 @@ contextBridge.exposeInMainWorld('api', {
     getClipboardText: () => {
         return ipcRenderer.invoke('get-clipboard-text');
     },
+
     salvarArquivo: 
     (nome, buffer) => 
-        ipcRenderer.invoke('upload:salvar-imagem', nome, buffer)
+        ipcRenderer.invoke('upload:salvar-imagem', nome, buffer),
+
+    getFileAtServer: (filePath) => 
+        ipcRenderer.invoke('get-file-at-server', filePath)
 })
 

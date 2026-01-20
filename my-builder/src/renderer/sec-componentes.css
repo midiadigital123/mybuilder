@@ -1,0 +1,259 @@
+@import './variables.css';
+
+/* O Container Principal */
+.component-box {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden; /* Importante para animações suaves */
+    margin-bottom: 15px;
+    transition: border-color 0.3s;
+}
+
+/* Efeito visual ao passar o mouse no box inteiro */
+.component-box:hover {
+    border-color: #444;
+}
+
+/* --- CABEÇALHO --- */
+.box-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(255,255,255,0.02);
+}
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-info h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
+.icon-wrapper {
+    color: #888;
+}
+
+/* --- O CORPO (CONTEÚDO) --- */
+.box-body {
+    display: none; /* ESCONDIDO POR PADRÃO */
+    padding: 20px;
+    border-top: 1px solid #333;
+    background-color: #161616;
+}
+
+/* LÓGICA DE ABERTURA: Quando o pai tem a classe .active, o corpo aparece */
+.component-box.active .box-body {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- ESTILOS DOS CONTROLES INTERNOS --- */
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.option-group label {
+    display: block;
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.option-group select {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: #252525;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.custom-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #2a2a2a;
+}
+
+.btn-secondary, .btn-primary {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid #444;
+    color: #aaa;
+}
+
+.btn-primary {
+    background-color: var(--primary, #3b82f6);
+    color: var(--border);
+}
+
+/* --- CSS DO TOGGLE (SWITCH) --- */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #444;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+/* Estilo quando o Switch está marcado (Ligado) */
+input:checked + .slider {
+    background-color: var(--primary, #3b82f6);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.main-layout {
+    display: flex;
+    height: 500px; /* Altura fixa para demonstração */
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #1e1e1e;
+}
+
+/* --- PAINEL ESQUERDO (CONTROLES) --- */
+.left-panel {
+    width: 35%; /* Solicitado: 35% */
+    background-color: #1e1e1e;
+    border-right: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* --- PAINEL DIREITO (VISUALIZAÇÃO) --- */
+.right-panel {
+    width: 65%; /* Complementar aos 35% do painel esquerdo */
+    background-color: #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
+}
+
+.preview {
+    flex: 1;
+    border-bottom: 1px solid #333;
+    color: #ccc;
+    overflow: auto;
+}
+
+.preview .prev-header {
+    height: 40px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 0 15px;
+    border-bottom: 1px solid #555;
+}
+
+.prev-header .eye-icon {
+    display: flex;
+    color: var(--primary);
+    padding: 0;
+    margin: 0;
+
+}
+.preview .prev-body {
+    padding: 15px;
+    font-size: 1rem;
+    background-color: white;
+    height: calc(100% - 40px);
+}
+
+.code-edit {
+    flex: 1;
+    background-color: #0e8f5b;
+    border-top: 1px solid #333;
+    padding: 15px;
+    color: #ccc;
+    overflow: auto;
+    display: none;
+}
+
+/* ÍCONE DE OLHO */
+.eye-icon {
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    /* display: none; */
+     transition: all 0.3s;
+      padding: 2px 5px;
+      border-radius: 5px;
+}
+
+.eye-icon:hover {
+    color: var(--primary); /* Azul ao passar o mouse */
+     transition: all 0.3s;
+}
+
+
+
+[active-view="true"] .eye-icon{
+    color: black;
+    background-color: var(--primary);
+    padding: 2px 5px;
+    border-radius: 5px;
+    display: flex;
+    transition: all 0.3s;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}

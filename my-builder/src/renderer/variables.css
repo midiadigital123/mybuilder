@@ -1,0 +1,11 @@
+:root {
+    /* Tokens do Próprio Formulário */
+    --bg-app: #121212;
+    --surface: #1e1e1e;
+    --border: #333333;
+    --text-main: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --primary: #b9e600;
+    --primary-hover: #9cc300;
+    --gap: 20px;
+}

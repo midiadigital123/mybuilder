@@ -60,6 +60,23 @@ const handleSalvarImagem = async (event, nomeArquivo, buffer) => {
     }
   };
 
+  const handleGetFileAtServer = async (_, filePath) => {
+    console.log("filepath", filePath)
+    // faz um fetch da url do filePath
+    try {
+      const response = await fetch(filePath);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const textData = await response.text();
+      console.log(textData)
+      return textData;
+    } catch (error) {
+      console.error("Erro ao buscar o arquivo no servidor:", error);
+      throw error;
+    }
+  }
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -69,6 +86,7 @@ app.whenReady().then(() => {
 
   ipcMain.handle("upload:salvar-imagem", handleSalvarImagem);
 
+  ipcMain.handle("get-file-at-server", handleGetFileAtServer);
 
   createWindow();
 
