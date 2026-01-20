@@ -14,6 +14,7 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+
     webPreferences: {
       preload: path.join(__dirname, "preload.js"), // Basicamente diz: Quando carregar a tela, carregue esse script de segurança antes de qualquer coisa.
     },
@@ -29,7 +30,7 @@ const createWindow = () => {
   }
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 };
 
 
@@ -67,6 +68,7 @@ app.whenReady().then(() => {
   ipcMain.handle("get-clipboard-text", handleGetClipboardText);
 
   ipcMain.handle("upload:salvar-imagem", handleSalvarImagem);
+
 
   createWindow();
 
