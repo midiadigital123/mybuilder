@@ -26,7 +26,8 @@
  * ```
  */
 
-
+import handleEditMode from './editMode.js';
+import handlePreviewMode from './previewMode.js';
 
 console.log(
   '👋 This message is being logged by "renderer.js", included via Vite',
@@ -118,7 +119,7 @@ const updateColorPreview = (currentCard, color) => {
 const verifyIfValidColor = (color) => {
   // Verifica se a cor é válida (um hex válido)
   const isValidHex = /^#([0-9A-F]{3}){1,2}$/i.test(color);
-  console.log(color)
+  //console.log(color)
   if (!isValidHex) {
     alert('O texto copiado não é uma cor hexadecimal válida!');
     return false;
@@ -376,14 +377,18 @@ const fetchData = async (target) => {
 const setThemeMode = (prevShadow) => {
 const lightModeBtn = document.getElementById('light-mode-btn');
 const darkModeBtn = document.getElementById('dark-mode-btn');
-lightModeBtn.addEventListener('click', () => {
+lightModeBtn.addEventListener('click', (e) => {
   console.log(prevShadow)
   let previewContent = prevShadow.querySelector('.preview-content');
   previewContent.setAttribute('data-bs-theme', 'light');
+  e.target.classList.add('active');
+  darkModeBtn.classList.remove('active');
 });
 darkModeBtn.addEventListener('click', () => {
   let previewContent = prevShadow.querySelector('.preview-content');
   previewContent.setAttribute('data-bs-theme', 'dark');
+  darkModeBtn.classList.add('active');
+  lightModeBtn.classList.remove('active');
 });
 }
 const insertShadowDOM = () => {
@@ -539,14 +544,22 @@ const insertShadowDOM = () => {
 `;
 
     style.textContent = cssVariables;
-    console.log(cssVariables)
+    //console.log(cssVariables)
   shadowRoot.appendChild(style);
 
   // Adiciona um conteúdo inicial
   const content = document.createElement('div');
   content.className = 'preview-content';
+  content.style.height = '100%';
   content.setAttribute('data-bs-theme', 'light'); // Tema padrão
-  content.innerHTML = `<p style="padding: 1rem; color: var(--theme-text);">O preview dos componentes aparecerá aqui quando você ativar o olho em algum componente.</p>`;
+  content.innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: center; height: 100%; ">
+      <svg  width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+    </div>
+  `;
   shadowRoot.appendChild(content);
   setThemeMode(shadowRoot);
 };
@@ -554,6 +567,7 @@ const insertShadowDOM = () => {
 const insertDataIntoShadowDOM = () => {
   // Os dados que aparecem no shadow DOM dependem do componente ativo (olho ativo)
   const shadowHost = document.getElementById('preview-shadow-host');
+  shadowHost.style.height = '100%';
   const shadowRoot = shadowHost.shadowRoot;
 
   // Monitora a mudança no atributo active-view dos component-box
@@ -563,7 +577,7 @@ const insertDataIntoShadowDOM = () => {
     for (const mutation of mutationsList) {
       if (mutation.attributeName === 'active-view') {
         if (mutation.target.getAttribute('active-view') === 'true') {
-          console.log('O olho foi ativado para:', mutation.target);
+          //console.log('O olho foi ativado para:', mutation.target);
            updatePreview(mutation.target);
         } else {
           updatePreview(mutation.target);
@@ -579,19 +593,27 @@ const insertDataIntoShadowDOM = () => {
 
 
   const updatePreview =  async (target) => {
-    console.log("entrouu");
+    //console.log("entrouu");
 
     if (!target) return;
     if (target.getAttribute('active-view') === 'false') {
       // Limpa o preview
       const previewContent = shadowRoot.querySelector('.preview-content');
-      previewContent.innerHTML = ``;
+      previewContent.innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: center; height: 100%; ">
+      <svg  width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+    </div>
+  `;
+    
       shadowRoot.appendChild(previewContent);
       return;
     }
     const componentType = target.getAttribute('data-comp');
     if (!componentType) return;
-    console.log("Componente ativo para preview:", componentType)
+    //console.log("Componente ativo para preview:", componentType)
     await fetchData(target);
     // Limpa o conteúdo anterior
     // Cria o conteúdo HTML do preview
@@ -622,3 +644,6 @@ const controlSectionComponents = () => {
 }
 
 controlSectionComponents();
+
+handleEditMode(tempObject);
+handlePreviewMode(tempObject);

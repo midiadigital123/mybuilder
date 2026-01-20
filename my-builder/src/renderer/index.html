@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
+    <title>Builder</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="sec-colors.css" />
     <link rel="stylesheet" href="sec-upload.css" />
@@ -467,14 +467,14 @@
 
               <!-- Opção 3: Customização -->
               <div class="custom-actions">
-                <button class="btn-primary" type="button">Customizar Código</button>
+                <button custom-to="destaque" class="btn-primary btn-customization" type="button">Customizar Código</button>
               </div>
             </div>
           </div>
             <!-- Fim Componente 1 -->
 
-                      <!-- Componente 1 -->
-             <div class="component-box" active-view="false" id="comp-box-2" data-comp="carrosel">
+                      <!-- Componente 2 -->
+             <div class="component-box" active-view="false" id="comp-box-2" data-comp="carrossel">
             <!-- CABEÇALHO (Sempre Visível) -->
             <div class="box-header">
               <div class="header-info">
@@ -491,7 +491,7 @@
                     <path d="M3 3h18v18H3zM9 9h6M9 15h6"></path>
                   </svg>
                 </div>
-                <h3>Carrosel</h3>
+                <h3>Carrossel</h3>
               </div>
 
               <div class="header-actions">
@@ -544,7 +544,7 @@
           </div>
           
           <div class="right-panel">
-            <div class="preview">
+            <div class="preview"  active-context >
                 <div class="prev-header">
                      <div class="eye-icon" title="Visualizar">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -553,7 +553,7 @@
                         </svg>
                     </div>
                     
-                    <span>Modo de Pré-visualização</span> <button id="light-mode-btn" type="button">Light</button> <button id="dark-mode-btn" type="button">Dark</button>
+                    <span>Modo de Visualização</span> <button id="light-mode-btn" class="active" type="button">Light</button> <button id="dark-mode-btn" type="button">Dark</button>
 
                 </div>
                 <div class="prev-body">
@@ -563,7 +563,24 @@
 
                 </div>
             </div>
-            <div class="code-edit"></div>
+            <div class="code-edit">
+                <div class="edit-header">
+                    <span>Modo de Edição</span>
+                    <div class="save">
+                        <button type="button" class="save-and-apply">Salvar e Aplicar</button>
+                    </div>
+                </div>
+                <div class="edit-tabs">
+                    <!-- Aqui vão as 3 tabs (HTML, CSS E JS) -->
+                    <button class="tab-button active" type="button" data-lang="html">HTML</button>
+                    <button class="tab-button" type="button" data-lang="css">CSS</button>
+                    <button class="tab-button" type="button" data-lang="js">JS</button>
+                </div>
+                <div class="edit-body">
+                    <!-- Aqui vai o editor de código -->
+                    <textarea id="code-textarea"></textarea>
+                </div>  
+            </div>
           </div>
           </div>
          

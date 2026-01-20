@@ -7,5 +7,6 @@
     --text-muted: #a0a0a0;
     --primary: #b9e600;
     --primary-hover: #9cc300;
+    --primary-light: rgba(183, 255, 2, 0.156);
     --gap: 20px;
 }
