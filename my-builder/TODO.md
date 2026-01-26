@@ -37,3 +37,4 @@
 
     -> Pensei em fazer para a tipografia a configuração de tamanhos pela interface e não pelo código, mas acho que isso é uma perda de tempo, visto que todo o resto é feito via código. 
 
+LIB de Highlight: https://highlightjs.org/
