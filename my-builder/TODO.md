@@ -38,3 +38,16 @@
     -> Pensei em fazer para a tipografia a configuração de tamanhos pela interface e não pelo código, mas acho que isso é uma perda de tempo, visto que todo o resto é feito via código. 
 
 LIB de Highlight: https://highlightjs.org/
+
+
+----
+
+* Partes do sistema *
+
+-> Iniciou a criação do curso: cria um json ou objeto js temporário para armazenar os valores digitados.
+
+-> Sidebar para acompanhamento dos passos
+
+-> O json/objeto é atualizado sempre mudar de um passo para outro, assim eu garanto que vou atualizar sempre, mesmo se o usuário voltar em um passo, depois ir para um próximo.
+
+-> Eu posso separar em 4 módulos(seções), po, tranquilamente. Se mais um passo for inserido é só mais um módulo. Cada módulo vai ter os scripts associados aos componentes daquela seção. 
