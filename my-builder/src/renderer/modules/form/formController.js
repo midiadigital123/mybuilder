@@ -38,42 +38,12 @@ const loadInitialData = () => {
     observerModule.sendNotify('form:initialDataLoaded', initialData);
 };
 
-// const fillTempObjectBasicInfo = () => {
-//   tempObject['course-name'] = document.getElementById('courseName').value;
-//   tempObject['course-time'] = document.getElementById('courseWorkload').value;
-//   tempObject['course-moodle-id'] = document.getElementById('moodleId').value;
-//   tempObject['course-moodle-url'] = document.getElementById('moodleUrl').value;
-//   tempObject['course-encapsulation-class'] = document.getElementById('encapsulateClass').value;
-//   let colors = document.querySelectorAll('.color-card');
-//   colors.forEach(card => {
-//     const colorKey = card.getAttribute('data-var');
-//     const colorValue = card.querySelector('.hex').textContent;
-//     tempObject.colorScheme[colorKey] = colorValue;
-//   });
-//   // console.log(tempObject)
-// };
 
-// fillTempObjectBasicInfo();
-
-// document.getElementById('project-form').addEventListener('submit', async (e) => {
-//     e.preventDefault();
-
-    // // 1. Pega os dados de texto (como string)
-    // const dadosTexto = {}; // (Você preencheria isso com os valores dos inputs textuais)
-
-    // // 2. Envia os dados textuais para criar a pasta
-    // await window.api.gerarEstrutura(dadosTexto); 
-
-    // // 3. Pega as imagens e envia
-    // const imageInput = document.getElementById('cardImages');
-    // await fazerUploadDosAssets(imageInput);
-// });
 
 const init = () => {
   console.log('[FormController] Inicializando o Form Controller...');
   monitorTextInputs();
   monitorFormSubmit();
-  
 };
 
  const formController = {
@@ -82,5 +52,3 @@ const init = () => {
 };
 
 export default formController;
-
-// export { init, loadInitialData };

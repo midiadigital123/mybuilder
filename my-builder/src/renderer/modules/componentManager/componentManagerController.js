@@ -248,3 +248,18 @@ controlSectionComponents();
 
 handleEditMode(tempObject);
 handlePreviewMode(tempObject);
+
+
+// document.getElementById('project-form').addEventListener('submit', async (e) => {
+//     e.preventDefault();
+
+    // // 1. Pega os dados de texto (como string)
+    // const dadosTexto = {}; // (Você preencheria isso com os valores dos inputs textuais)
+
+    // // 2. Envia os dados textuais para criar a pasta
+    // await window.api.gerarEstrutura(dadosTexto); 
+
+    // // 3. Pega as imagens e envia
+    // const imageInput = document.getElementById('cardImages');
+    // await fazerUploadDosAssets(imageInput);
+// });

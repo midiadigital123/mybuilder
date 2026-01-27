@@ -32,6 +32,7 @@
 import projectState from './temp/state/projectState.js';
 import formController from './modules/form/formController.js';
 import colorPickerController from './modules/colorPicker/colorPickerController.js';
+import assetUploadController from './modules/assetUpload/assetUploadController.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -55,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     projectState.init();
     formController.init();
     colorPickerController.init();
+    assetUploadController.init();
 
     // Inicia o módulo do formulário
     

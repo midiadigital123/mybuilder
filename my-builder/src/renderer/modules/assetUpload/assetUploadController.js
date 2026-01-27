@@ -1,4 +1,7 @@
+import { formatBytes } from '../../utils/file.js';
+
 async function fazerUploadDosAssets(inputElement) {
+    console.log("sdfsdf")
   const arquivos = Array.from(inputElement.files);
 
   if (arquivos.length === 0) return;
@@ -37,7 +40,7 @@ const fileInput = document.getElementById('cardImages');
 const fileListElement = document.getElementById('file-list');
 
 // Evento: Quando o usuário seleciona arquivos
-fileInput.addEventListener('change', (event) => {
+fileInput.addEventListener('change',  async (event) => {
     const files = event.target.files;
     
     // 1. Limpa a lista anterior
@@ -52,8 +55,6 @@ fileInput.addEventListener('change', (event) => {
         if (isImage) {
             // Cria uma URL temporária para a imagem na memória (blob)
             const blobUrl = URL.createObjectURL(file);
-            // adiciona a url no objeto tempObject.assets
-            tempObject.assets[`image_${index}`] = blobUrl;
             
             thumbnail = `<img src="${blobUrl}" alt="Preview" class="file-thumbnail">`;
         } else {
@@ -84,9 +85,20 @@ fileInput.addEventListener('change', (event) => {
     if (files.length > 0) {
         uploadLabel.textContent = `${files.length} arquivo(s) selecionado(s)`;
     }
+
+    const imageInput = document.getElementById('cardImages');
+ console.log(imageInput)
+await fazerUploadDosAssets(imageInput);
+
+    
 });
 
-
 }
+const init = () => {
+  handleUploadDosAssets();
+};
 
-handleUploadDosAssets();
+const assetUploadController = {
+  init
+};
+export default assetUploadController;

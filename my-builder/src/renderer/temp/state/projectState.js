@@ -74,10 +74,6 @@ class ProjectState {
     }
     observerModule.sendNotify('state:initialized', this.get());
   }
-  
-
-
-
 
   // O método init onde a classe se inscreve para ouvir eventos do MUNDO EXTERNO
   init() {
