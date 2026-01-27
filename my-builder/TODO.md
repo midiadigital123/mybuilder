@@ -51,3 +51,5 @@ LIB de Highlight: https://highlightjs.org/
 -> O json/objeto é atualizado sempre mudar de um passo para outro, assim eu garanto que vou atualizar sempre, mesmo se o usuário voltar em um passo, depois ir para um próximo.
 
 -> Eu posso separar em 4 módulos(seções), po, tranquilamente. Se mais um passo for inserido é só mais um módulo. Cada módulo vai ter os scripts associados aos componentes daquela seção. 
+
+
