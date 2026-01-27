@@ -46,7 +46,6 @@ class ProjectState {
   #updateCourseInfo(field, value) {
     if (this.#state[field] !== undefined) {
       this.#state[field] = value;
-      // Notifica o resto da aplicação que o estado mudou
       observerModule.sendNotify('state:changed', { type: 'courseInfo', field, value });
     }
   }
@@ -59,7 +58,6 @@ class ProjectState {
   }
 
   #updateInitialData(initialData) {
-    // Atualiza as informações básicas do curso
     for (const key of ['course-name', 'course-time', 'course-moodle-id', 'course-moodle-url', 'course-encapsulation-class']) {
       if (initialData[key] !== undefined) {
         this.#state[key] = initialData[key];
@@ -87,12 +85,12 @@ class ProjectState {
 
     observerModule.subscribeTo('form:inputChanged', (data) => {
       console.log(`[ProjectState] Ouvi 'form:inputChanged':`, data);
-      // Chama seu próprio método privado para atualizar
       this.#updateCourseInfo(data.field, data.value);
     });
 
     observerModule.subscribeTo('color:changed', (data) => {
       console.log(`[ProjectState] Ouvi 'color:changed':`, data);
+      // console.log(projectState.get());
       this.#updateColor(data.colorKey, data.colorValue);
     });
 
@@ -100,6 +98,8 @@ class ProjectState {
         console.log('[ProjectState] Recebendo carga inicial de dados:', initialData);
         this.#updateInitialData(initialData);
     });
+
+
 
     // ... outras inscrições
   }

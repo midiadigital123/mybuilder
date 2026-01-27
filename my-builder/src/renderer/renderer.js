@@ -31,6 +31,7 @@
 
 import projectState from './temp/state/projectState.js';
 import formController from './modules/form/formController.js';
+import colorPickerController from './modules/colorPicker/colorPickerController.js';
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -53,6 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // tempObject já está importado
     projectState.init();
     formController.init();
+    colorPickerController.init();
+
     // Inicia o módulo do formulário
     
 
