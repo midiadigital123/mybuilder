@@ -1,5 +1,6 @@
 import componentsData from "../componentManager/mock/componentMockData.js";
 import createEl from "../../utils/dom.js";
+import observerModule from "../../../services/observerModule.js";
 
 /**
  * Dados mockados:
@@ -17,10 +18,17 @@ import createEl from "../../utils/dom.js";
         models: ['m1'],
         versions: ["v1.0"],
     }
- *
+ * 
+ * Atualmente essa parte está trabalhando com dados mockados, mas a ideia é usar o endpoint
+ * dos meninos da infra para buscar os componentes disponíveis.
+ * (colocar uma menção a esse arquivo no README.md)
+ * 
  */
 
-const fillLayoutComponents = () => {
+const fillLayoutWithComponentsFromAPI = () => {}; // Em breve
+
+  
+const fillLayoutWithComponentsMocked = () => {
   const componentsContainer = document.getElementById("components-section");
   componentsData.forEach((component) => {
     // Constrói HTML de cada componente
@@ -30,9 +38,19 @@ const fillLayoutComponents = () => {
     componentBox.appendChild(header);
     componentBox.appendChild(body);
     componentsContainer.appendChild(componentBox);
+    // Envia uma notificação para que projectState saiba dos componentes possíveis
+    observerModule.sendNotify('component:avaliableComponentAdded', 
+      { componentId: component.id,
+          name: component.name,
+          models: component.models,
+          versions: component.versions,
+          focused: false,
+          actived: false,
+          alias: component.alias
+      }); // Inicialmente não está focado nem ativo
+
   });
 };
-
 
 const buildComponentBox = (component) => {
     return createEl({
@@ -41,7 +59,8 @@ const buildComponentBox = (component) => {
         id: component.id,
         attributes: { 
             'data-comp': component.id, 
-            'active-view': 'false' 
+            'active-view': 'false',
+            'alias': component.alias
         }
     });
 }
@@ -105,7 +124,7 @@ const buildComponentBody = (component) => {
 
 
 const init = () => {
-  fillLayoutComponents();
+  fillLayoutWithComponentsMocked();
 };
 
 const renderView = {

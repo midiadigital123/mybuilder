@@ -1,5 +1,6 @@
 import CONSTANTS from '../../constants/CONSTANTS.js';
 import renderView from './renderView.js';
+import handleStates from './handleStates.js';
 
 // const controlActiveComponent = () => {
 // // Seleciona o switch e a caixa
@@ -120,6 +121,7 @@ import renderView from './renderView.js';
 //   lightModeBtn.classList.remove('active');
 // });
 // }
+
 // const insertShadowDOM = () => {
 //   const shadowHost = document.getElementById('preview-shadow-host');
 //   // Cria o shadow root
@@ -251,8 +253,11 @@ import renderView from './renderView.js';
 // handlePreviewMode(tempObject);
 
 
+
+
 const init = () => {
   renderView.init();
+  handleStates.init();
 };
 
 const componentManagerController = {
