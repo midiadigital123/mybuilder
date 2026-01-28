@@ -3,13 +3,12 @@ import CONSTANTS from '../../constants/CONSTANTS.js';
 
 async function fazerUploadDosAssets(inputElement) {
   const arquivos = Array.from(inputElement.files);
-
   if (arquivos.length === 0) return;
 
   // Feedback visual ao usuário
-  const btnGerar = document.getElementById('btnGerar');
-  btnGerar.disabled = true; // Desabilita o botão durante o upload
-  btnGerar.textContent = 'Fazendo upload dos assets...';
+  // const btnGerar = document.getElementById('btnGerar');
+  // btnGerar.disabled = true; // Desabilita o botão durante o upload
+  // btnGerar.textContent = 'Fazendo upload dos assets...';
 
   // Processamos todos os arquivos selecionados
   // Promise.all espera todos terminarem antes de avisar que terminou
@@ -29,12 +28,12 @@ async function fazerUploadDosAssets(inputElement) {
     console.log(`Arquivo ${arquivo.name} enviado`)
   }))
   // Restaura o estado do botão
-  btnGerar.disabled = false;
-  btnGerar.textContent = 'Gerar Estrutura';
+  // btnGerar.disabled = false;
+  // btnGerar.textContent = 'Gerar Estrutura';
 
 }
 
-const handleUploadDosAssets = () => {
+const monitoraUploadDosAssets = () => {
   // Seletores
 const fileInput = document.getElementById('cardImages');
 const fileListElement = document.getElementById('file-list');
@@ -50,15 +49,15 @@ fileInput.addEventListener('change',  async (event) => {
     Array.from(files).forEach((file, index) => {
         // Verifica se é uma imagem (para gerar preview)
         const isImage = file.type.startsWith('image/');
-        let thumbnail = '';
+        // let thumbnail = '';
 
-        if (isImage) {
-            // Cria uma URL temporária para a imagem na memória (blob)
-            const blobUrl = URL.createObjectURL(file);
-            thumbnail = `<img src="${blobUrl}" alt="Preview" class="file-thumbnail">`;
-        } else {
-            thumbnail = `<div class="file-icon">📄</div>`;
-        }
+        // if (isImage) {
+        //     // Cria uma URL temporária para a imagem na memória (blob)
+        //     const blobUrl = URL.createObjectURL(file);
+        //     thumbnail = `<img src="${blobUrl}" alt="Preview" class="file-thumbnail">`;
+        // } else {
+        //     thumbnail = `<div class="file-icon">📄</div>`;
+        // }
 
         // Cria o elemento HTML da lista
         const li = document.createElement('li');
@@ -78,23 +77,18 @@ fileInput.addEventListener('change',  async (event) => {
         // Adiciona na tela
         fileListElement.appendChild(li);
     });
-
+      await fazerUploadDosAssets(fileInput);
     // Feedback visual na área de upload
     const uploadLabel = document.querySelector('.upload-zone span');
     if (files.length > 0) {
         uploadLabel.textContent = `${files.length} arquivo(s) selecionado(s)`;
     }
-
-  const imageInput = document.getElementById('cardImages');
- console.log(imageInput)
-await fazerUploadDosAssets(imageInput);
-
     
 });
 
 }
 const init = () => {
-  handleUploadDosAssets();
+  monitoraUploadDosAssets();
 };
 
 const assetUploadController = {

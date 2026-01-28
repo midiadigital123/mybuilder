@@ -10,3 +10,8 @@
     --primary-light: rgba(183, 255, 2, 0.156);
     --gap: 20px;
 }
+
+
+.thisEl{
+    border: 5px solid red;
+}

@@ -86,6 +86,8 @@ const handleCreateStandartStructure = async (_, year) => {
     `${year}-X/assets/img`,
     `${year}-X/assets/js`,
     `${year}-X/content/docs`,
+    `${year}-X/temp/assets/css`, // Pasta para armazenar os arquivos CSS dos componentes antes da build
+    `${year}-X/temp/assets/js`,  // Pasta para armazenar os arquivos JS dos componentes antes da build
   ];
 
   try {

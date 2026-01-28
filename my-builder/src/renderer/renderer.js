@@ -34,6 +34,7 @@ import formController from './modules/form/formController.js';
 import colorPickerController from './modules/colorPicker/colorPickerController.js';
 import assetUploadController from './modules/assetUpload/assetUploadController.js';
 import createStandartFolderController from './modules/createStandartFolder/createStandartFolderController.js'
+import componentManagerController from './modules/componentManager/componentManagerController.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -59,9 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
     formController.init();
     colorPickerController.init();
     assetUploadController.init();
+    componentManagerController.init();
 
 
-    
     // Inicia o módulo do formulário
     
 

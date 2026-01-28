@@ -75,6 +75,20 @@ class ProjectState {
     observerModule.sendNotify('state:initialized', this.get());
   }
 
+   #updateComponenteTempData(componentName, html, css, js) {
+    // if (this.#state.colorScheme[colorKey] !== undefined) {
+    //   this.#state.colorScheme[colorKey] = colorValue;
+    //   observerModule.sendNotify('state:changed', { type: 'colorScheme', colorKey, colorValue });
+    // }
+  }
+
+    #updateFocusedComponente() {
+    // if (this.#state.colorScheme[colorKey] !== undefined) {
+    //   this.#state.colorScheme[colorKey] = colorValue;
+    //   observerModule.sendNotify('state:changed', { type: 'colorScheme', colorKey, colorValue });
+    // }
+  }
+
   // O método init onde a classe se inscreve para ouvir eventos do MUNDO EXTERNO
   init() {
     console.log('[ProjectState] Inicializando e ouvindo eventos...');
@@ -93,6 +107,18 @@ class ProjectState {
     observerModule.subscribeTo('form:initialDataLoaded', (initialData) => {
         console.log('[ProjectState] Recebendo carga inicial de dados:', initialData);
         this.#updateInitialData(initialData);
+    });
+
+    observerModule.subscribeTo('component:updateInEditMode', (data) => {
+      // Servirá para enviar ao backend os arquivos do componente já com a modificação. 
+      // Depois que o usuário clicou em Salvar(dentro do customizar código), o renderer vai disparar
+      // algo como observerModule.sendNotify('component:updateInEditMode', { component: componentName ,html: html, css: css, js: js })
+        this.#updateComponenteTempData(data.componentName, data.html, data.css, data.js);
+    });
+
+     observerModule.subscribeTo('component:setFocus', (data) => {
+      // Servirá para enviar ao shadowDom(visualização e edit) a informação de qual componente mostrar. 
+        this.#updateFocusedComponente();
     });
 
 

@@ -1,5 +1,4 @@
-import CONSTANTS from '../../constants/CONSTANTS.js';
-import renderView from './renderView.js';
+// import {CONSTANTS} from '../../../constants/CONSTANTS.js';
 
 // const controlActiveComponent = () => {
 // // Seleciona o switch e a caixa
@@ -251,28 +250,16 @@ import renderView from './renderView.js';
 // handlePreviewMode(tempObject);
 
 
-const init = () => {
-  renderView.init();
-};
+// // document.getElementById('project-form').addEventListener('submit', async (e) => {
+// //     e.preventDefault();
 
-const componentManagerController = {
-  init,
-};
+//     // // 1. Pega os dados de texto (como string)
+//     // const dadosTexto = {}; // (Você preencheria isso com os valores dos inputs textuais)
 
-export default componentManagerController;
+//     // // 2. Envia os dados textuais para criar a pasta
+//     // await window.api.gerarEstrutura(dadosTexto); 
 
-// document.getElementById('project-form').addEventListener('submit', async (e) => {
-//     e.preventDefault();
-
-    // // 1. Pega os dados de texto (como string)
-    // const dadosTexto = {}; // (Você preencheria isso com os valores dos inputs textuais)
-
-    // // 2. Envia os dados textuais para criar a pasta
-    // await window.api.gerarEstrutura(dadosTexto); 
-
-    // // 3. Pega as imagens e envia
-    // const imageInput = document.getElementById('cardImages');
-    // await fazerUploadDosAssets(imageInput);
-// });
-
-
+//     // // 3. Pega as imagens e envia
+//     // const imageInput = document.getElementById('cardImages');
+//     // await fazerUploadDosAssets(imageInput);
+// // });
