@@ -3,6 +3,7 @@ import path from "node:path";
 import started from "electron-squirrel-startup";
 const { ipcMain } = require("electron");
 const fs = require("fs");
+const fss = require("fs").promises;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -40,47 +41,73 @@ const handleGetClipboardText = async () => {
   return clipboard.readText();
 };
 
-const handleSalvarImagem = async (event, nomeArquivo, buffer) => {
-    const pastaDestino = path.join(__dirname, 'downloads'); // Define a pasta de destino para salvar a imagem
-
-    // Garante que a pasta existe
-    if (!fs.existsSync(pastaDestino)) {
-      fs.mkdirSync(pastaDestino, { recursive: true });
-    }
-
-    const caminhoCompleto = path.join(pastaDestino, nomeArquivo);
-
-    // fs.writeFile aceita Buffer nativamente
-    try {
-      fs.writeFileSync(caminhoCompleto, buffer);
-      return true;
-    } catch (erro) {
-      console.error("Erro ao salvar imagem:", erro);
-      return false;
-    }
-  };
-
-  const handleGetFileAtServer = async (_, filePath) => {
-    console.log("filepath", filePath)
-    // faz um fetch da url do filePath
-    try {
-      const response = await fetch(filePath);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const textData = await response.text();
-      console.log(textData)
-      return textData;
-    } catch (error) {
-      console.error("Erro ao buscar o arquivo no servidor:", error);
-      throw error;
-    }
+const handleSalvarImagem = async (_, nomeArquivo, buffer, year) => {
+  // const pastaDestino = path.join(__dirname, "img"); // Define a pasta de destino para salvar a imagem
+  const pastaDestino = path.join(__dirname, `${year}-X`, "assets", "img")
+  // Garante que a pasta existe
+  if (!fs.existsSync(pastaDestino)) {
+    // fs.mkdirSync(pastaDestino, { recursive: true });
+    return false;
   }
+
+  const caminhoCompleto = path.join(pastaDestino, nomeArquivo);
+
+  // fs.writeFile aceita Buffer nativamente
+  try {
+    fs.writeFileSync(caminhoCompleto, buffer);
+    return true;
+  } catch (erro) {
+    console.error("Erro ao salvar imagem:", erro);
+    return false;
+  }
+};
+
+const handleGetFileAtServer = async (_, filePath) => {
+  console.log("filepath", filePath);
+  // faz um fetch da url do filePath
+  try {
+    const response = await fetch(filePath);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const textData = await response.text();
+    console.log(textData);
+    return textData;
+  } catch (error) {
+    console.error("Erro ao buscar o arquivo no servidor:", error);
+    throw error;
+  }
+};
+
+
+const handleCreateStandartStructure = async (_, year) => {
+  const pastas = [
+    `${year}-X/assets/css`,
+    `${year}-X/assets/img`,
+    `${year}-X/assets/js`,
+    `${year}-X/content/docs`,
+  ];
+
+  try {
+    // Usamos map para criar todas as promessas e Promise.all para aguardar todas
+    await Promise.all(
+      pastas.map((pasta) =>
+        fss.mkdir(path.join(__dirname, pasta), { recursive: true }),
+      ),
+    );
+
+    // console.log("✅ Estrutura de pastas criada com sucesso!");
+  } catch (err) {
+    console.error("❌ Erro ao criar estrutura:", err);
+  }
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+
+  ipcMain.handle("create-standart-folder", handleCreateStandartStructure)
 
   ipcMain.handle("get-clipboard-text", handleGetClipboardText);
 

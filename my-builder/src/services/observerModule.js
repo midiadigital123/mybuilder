@@ -6,6 +6,11 @@ class ObserverModule {
   constructor() {
     // Usamos um Map para associar um "canal" a uma lista de "observadores" (funções)
     this.observers = new Map();
+    /**
+     * Map() é uma estrutura de dados que armazena pares chave-valor, assim como um objeto,
+     * a diferença é que as chaves em um Map podem ser de qualquer tipo (objetos, funções, etc),
+     * enquanto em um objeto as chaves são sempre strings ou símbolos.
+     */
   }
 
   /**
@@ -17,8 +22,10 @@ class ObserverModule {
     // Quem chama subscribeTo quer ser notificado quando algo mudar no "channel"
     if (!this.observers.has(channel)) {
       this.observers.set(channel, []);
+      console.log(this.observers);
     }
     this.observers.get(channel).push(callback);
+    
   }
 
   /**

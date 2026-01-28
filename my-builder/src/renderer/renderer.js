@@ -33,11 +33,12 @@ import projectState from './temp/state/projectState.js';
 import formController from './modules/form/formController.js';
 import colorPickerController from './modules/colorPicker/colorPickerController.js';
 import assetUploadController from './modules/assetUpload/assetUploadController.js';
-
+import createStandartFolderController from './modules/createStandartFolder/createStandartFolderController.js'
 
 document.addEventListener('DOMContentLoaded', () => {
 
   const init = () => {
+
 
     // Inicia os módulos
     /**
@@ -53,11 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cria o estado temporário do projeto em edição
     // tempObject já está importado
+    createStandartFolderController.init();
     projectState.init();
     formController.init();
     colorPickerController.init();
     assetUploadController.init();
 
+
+    
     // Inicia o módulo do formulário
     
 

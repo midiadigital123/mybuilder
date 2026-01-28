@@ -1,7 +1,7 @@
 import { formatBytes } from '../../utils/file.js';
+import CONSTANTS from '../../constants/CONSTANTS.js';
 
 async function fazerUploadDosAssets(inputElement) {
-    console.log("sdfsdf")
   const arquivos = Array.from(inputElement.files);
 
   if (arquivos.length === 0) return;
@@ -25,7 +25,7 @@ async function fazerUploadDosAssets(inputElement) {
 
     // 3. Envia para main.js via preload.js
 
-    await window.api.salvarArquivo(arquivo.name, uint8Array);
+    await window.api.salvarArquivo(arquivo.name, uint8Array, `${CONSTANTS.YEAR}`);
     console.log(`Arquivo ${arquivo.name} enviado`)
   }))
   // Restaura o estado do botão
@@ -55,7 +55,6 @@ fileInput.addEventListener('change',  async (event) => {
         if (isImage) {
             // Cria uma URL temporária para a imagem na memória (blob)
             const blobUrl = URL.createObjectURL(file);
-            
             thumbnail = `<img src="${blobUrl}" alt="Preview" class="file-thumbnail">`;
         } else {
             thumbnail = `<div class="file-icon">📄</div>`;
@@ -86,7 +85,7 @@ fileInput.addEventListener('change',  async (event) => {
         uploadLabel.textContent = `${files.length} arquivo(s) selecionado(s)`;
     }
 
-    const imageInput = document.getElementById('cardImages');
+  const imageInput = document.getElementById('cardImages');
  console.log(imageInput)
 await fazerUploadDosAssets(imageInput);
 

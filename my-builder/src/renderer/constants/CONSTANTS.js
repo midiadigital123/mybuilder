@@ -1,3 +1,6 @@
+const getYear = () => new Date().getFullYear().toString();
+
+
 const CONSTANTS = {
   SUPPORTED_FILE_TYPES: [".html", ".css", ".js", ".json"],
   CSS_VARIABLES: `
@@ -58,6 +61,7 @@ const CONSTANTS = {
   --color-inter3-bg: var(--intermediaria3-background-dark);
 }`,
   EMPTY_PREVIEW: `<div style="display: flex; align-items: center; justify-content: center; height: 100%; "><svg  width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></div>`,
+  YEAR: getYear(),
 };
 
 export default CONSTANTS;

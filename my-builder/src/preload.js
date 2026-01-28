@@ -10,10 +10,13 @@ contextBridge.exposeInMainWorld('api', {
     },
 
     salvarArquivo: 
-    (nome, buffer) => 
-        ipcRenderer.invoke('upload:salvar-imagem', nome, buffer),
+    (nome, buffer, year) => 
+        ipcRenderer.invoke('upload:salvar-imagem', nome, buffer, year),
 
     getFileAtServer: (filePath) => 
-        ipcRenderer.invoke('get-file-at-server', filePath)
+        ipcRenderer.invoke('get-file-at-server', filePath),
+
+   createFolder: (year) =>  
+        ipcRenderer.invoke('create-standart-folder', year)
 })
 
