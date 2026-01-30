@@ -3,274 +3,559 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Component Manager - UX Improved</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Diagnóstico de Uso de Dados Escolares</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-light: #6b7280;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 12px;
+            --transition: 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        /* Container Principal */
+        .quiz-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 700px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header e Barra de Progresso */
+        .quiz-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .progress-container {
+            background-color: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .step-indicator {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Corpo da Pergunta */
+        .quiz-body {
+            padding: 30px;
+            min-height: 400px; /* Evita pulos de layout */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h2.question-text {
+            font-size: 1.25rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        /* Opções de Resposta */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: #fff;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--radius);
+            padding: 15px 20px;
+            text-align: left;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            color: var(--text-main);
+            position: relative;
+            outline: none;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background-color: #eff6ff;
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background-color: #dbeafe;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        /* Botões de Navegação */
+        .quiz-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .btn-prev {
+            background: transparent;
+            color: var(--text-light);
+        }
+        .btn-prev:hover {
+            color: var(--text-main);
+            background: #f3f4f6;
+        }
+        .btn-prev:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-next {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-next:hover {
+            background: var(--primary-dark);
+        }
+        .btn-next:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        /* Tela de Resultados */
+        .result-screen {
+            display: none;
+            padding: 40px 30px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            font-weight: bold;
+        }
+        
+        .score-number { font-size: 2rem; line-height: 1; }
+        .score-label { font-size: 0.8rem; text-transform: uppercase; opacity: 0.9; }
+
+        .result-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .result-description {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .result-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-top: 20px;
+            text-align: left;
+            border-left: 5px solid var(--primary);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Cores dinâmicas para resultados */
+        .profile-a .score-circle { background: var(--success); }
+        .profile-a .result-card { border-left-color: var(--success); }
+        .profile-a .tag { background: #d1fae5; color: #065f46; }
+
+        .profile-b .score-circle { background: var(--warning); }
+        .profile-b .result-card { border-left-color: var(--warning); }
+        .profile-b .tag { background: #fef3c7; color: #92400e; }
+
+        .profile-c .score-circle { background: var(--danger); }
+        .profile-c .result-card { border-left-color: var(--danger); }
+        .profile-c .tag { background: #fee2e2; color: #991b1b; }
+
+        .restart-btn {
+            margin-top: 30px;
+            background-color: var(--text-main);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            .quiz-header { padding: 15px 20px; }
+            .quiz-body { padding: 20px; }
+            h2.question-text { font-size: 1.1rem; }
+            .option-btn { padding: 12px 15px; font-size: 0.95rem; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Sidebar: Lista de Componentes -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Componentes</h2>
-                <span class="badge" id="activeCount">0 ativos</span>
+
+<div class="quiz-container" id="quizContainer">
+    
+    <div id="quizScreen">
+        <div class="quiz-header">
+            <div class="step-indicator">
+                <span id="questionCounter">Questão 1 de 10</span>
+                <span id="pointsPreview" style="display:none;"></span>
             </div>
-
-            <div class="components-list" id="componentsList">
-                <!-- Component Card Template -->
-                <div class="component-card" data-component="destaque">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                            </svg>
-                        </div>
-                        <div class="card-info">
-                            <h3>Destaque</h3>
-                            <p class="card-status">Inativo</p>
-                        </div>
-                        <button class="btn-toggle" data-active="false">
-                            <span class="toggle-text">Ativar</span>
-                        </button>
-                    </div>
-                    
-                    <div class="card-body">
-                        <div class="config-group">
-                            <label>Modelo</label>
-                            <select class="select-model">
-                                <option value="m1">Modelo 1</option>
-                                <option value="m2">Modelo 2</option>
-                                <option value="m3">Modelo 3</option>
-                            </select>
-                        </div>
-                        
-                        <div class="config-group">
-                            <label>Versão</label>
-                            <select class="select-version">
-                                <option value="v1">Versão 1</option>
-                                <option value="v2">Versão 2</option>
-                            </select>
-                        </div>
-                        
-                        <button class="btn-edit">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                            Editar Código
-                        </button>
-                    </div>
-                </div>
-
-                <div class="component-card" data-component="carrossel">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                <line x1="8" y1="21" x2="16" y2="21"></line>
-                                <line x1="12" y1="17" x2="12" y2="21"></line>
-                            </svg>
-                        </div>
-                        <div class="card-info">
-                            <h3>Carrossel</h3>
-                            <p class="card-status">Inativo</p>
-                        </div>
-                        <button class="btn-toggle" data-active="false">
-                            <span class="toggle-text">Ativar</span>
-                        </button>
-                    </div>
-                    
-                    <div class="card-body">
-                        <div class="config-group">
-                            <label>Modelo</label>
-                            <select class="select-model">
-                                <option value="m1">Modelo 1</option>
-                                <option value="m2">Modelo 2</option>
-                            </select>
-                        </div>
-                        
-                        <div class="config-group">
-                            <label>Versão</label>
-                            <select class="select-version">
-                                <option value="v1">Versão 1</option>
-                                <option value="v2">Versão 2</option>
-                            </select>
-                        </div>
-                        
-                        <button class="btn-edit">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                            Editar Código
-                        </button>
-                    </div>
-                </div>
-
-                <div class="component-card" data-component="grid">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="7" height="7"></rect>
-                                <rect x="14" y="3" width="7" height="7"></rect>
-                                <rect x="14" y="14" width="7" height="7"></rect>
-                                <rect x="3" y="14" width="7" height="7"></rect>
-                            </svg>
-                        </div>
-                        <div class="card-info">
-                            <h3>Grid</h3>
-                            <p class="card-status">Inativo</p>
-                        </div>
-                        <button class="btn-toggle" data-active="false">
-                            <span class="toggle-text">Ativar</span>
-                        </button>
-                    </div>
-                    
-                    <div class="card-body">
-                        <div class="config-group">
-                            <label>Modelo</label>
-                            <select class="select-model">
-                                <option value="m1">Modelo 1</option>
-                                <option value="m2">Modelo 2</option>
-                            </select>
-                        </div>
-                        
-                        <div class="config-group">
-                            <label>Versão</label>
-                            <select class="select-version">
-                                <option value="v1">Versão 1</option>
-                                <option value="v2">Versão 2</option>
-                            </select>
-                        </div>
-                        
-                        <button class="btn-edit">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
-                            Editar Código
-                        </button>
-                    </div>
-                </div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
             </div>
-        </aside>
+        </div>
 
-        <!-- Main: Preview Area -->
-        <main class="preview-area">
-            <div class="preview-header">
-                <h2>Preview</h2>
-                <div class="preview-controls">
-                    <div class="theme-toggle">
-                        <button class="btn-theme active" data-theme="light">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="5"></circle>
-                                <line x1="12" y1="1" x2="12" y2="3"></line>
-                                <line x1="12" y1="21" x2="12" y2="23"></line>
-                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                                <line x1="1" y1="12" x2="3" y2="12"></line>
-                                <line x1="21" y1="12" x2="23" y2="12"></line>
-                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                            </svg>
-                            Light
-                        </button>
-                        <button class="btn-theme" data-theme="dark">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                            </svg>
-                            Dark
-                        </button>
-                    </div>
+        <div class="quiz-body">
+            <h2 class="question-text" id="questionText">Carregando pergunta...</h2>
+            <div class="options-list" id="optionsList">
                 </div>
-            </div>
+        </div>
 
-            <div class="preview-content" id="previewContent">
-                <div class="preview-empty">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="9" y1="9" x2="15" y2="15"></line>
-                        <line x1="15" y1="9" x2="9" y2="15"></line>
-                    </svg>
-                    <h3>Nenhum componente ativo</h3>
-                    <p>Ative um componente na barra lateral para visualizar</p>
-                </div>
-
-                <div class="preview-loading hidden">
-                    <div class="spinner"></div>
-                    <p>Carregando componente...</p>
-                </div>
-
-                <div class="preview-iframe-container hidden" id="previewContainer" data-theme="light">
-                    <!-- Shadow DOM será inserido aqui -->
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Modal: Editor de Código -->
-    <div class="modal-overlay hidden" id="codeEditorModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Editor de Código</h2>
-                <button class="btn-close" id="btnCloseModal">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <div class="tabs">
-                    <button class="tab-btn active" data-tab="html">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                            <polyline points="2 17 12 22 22 17"></polyline>
-                            <polyline points="2 12 12 17 22 12"></polyline>
-                        </svg>
-                        HTML
-                    </button>
-                    <button class="tab-btn" data-tab="css">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                        </svg>
-                        CSS
-                    </button>
-                    <button class="tab-btn" data-tab="js">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="16 18 22 12 16 6"></polyline>
-                            <polyline points="8 6 2 12 8 18"></polyline>
-                        </svg>
-                        JavaScript
-                    </button>
-                </div>
-
-                <div class="tab-content">
-                    <div class="tab-panel active" data-panel="html">
-                        <textarea id="htmlEditor" placeholder="<!-- HTML do componente -->"></textarea>
-                    </div>
-                    <div class="tab-panel" data-panel="css">
-                        <textarea id="cssEditor" placeholder="/* CSS do componente */"></textarea>
-                    </div>
-                    <div class="tab-panel" data-panel="js">
-                        <textarea id="jsEditor" placeholder="// JavaScript do componente"></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="btnCancelEdit">Cancelar</button>
-                <button class="btn btn-primary" id="btnSaveCode">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    Salvar e Aplicar
-                </button>
-            </div>
+        <div class="quiz-footer">
+            <button class="nav-btn btn-prev" id="prevBtn" onclick="prevQuestion()" disabled>Voltar</button>
+            <button class="nav-btn btn-next" id="nextBtn" onclick="nextQuestion()" disabled>Próxima</button>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div id="resultScreen" class="result-screen">
+        <div class="score-circle">
+            <span class="score-number" id="finalScore">0</span>
+            <span class="score-label">Pontos</span>
+        </div>
+        
+        <h2 class="result-title" id="resultTitle">Título do Perfil</h2>
+        <div class="tag" id="resultTag">Perfil</div>
+        
+        <p class="result-description" id="resultDescription">
+            Descrição do perfil aqui.
+        </p>
+
+        <div class="result-card">
+            <h4 style="margin-bottom: 8px; color: var(--text-main);">O que fazer agora?</h4>
+            <p id="resultAction" style="font-size: 0.95rem; color: var(--text-light);"></p>
+        </div>
+
+        <button class="restart-btn" onclick="restartQuiz()">Refazer Diagnóstico</button>
+    </div>
+
+</div>
+
+<script>
+    // --- DADOS DO QUIZ ---
+    const quizData = [
+        {
+            question: "Quando os resultados das avaliações externas chegam à escola, o que normalmente acontece?",
+            options: [
+                { text: "A equipe analisa os dados coletivamente e os utiliza para rever práticas e planejamento.", points: 3 },
+                { text: "Os dados são organizados e encaminhados conforme as orientações do sistema.", points: 2 },
+                { text: "Os resultados circulam pouco e acabam não sendo incorporados ao trabalho da escola.", points: 1 }
+            ]
+        },
+        {
+            question: "No planejamento pedagógico anual ou semestral, os dados de avaliação:",
+            options: [
+                { text: "São uma referência constante para definir prioridades e estratégias.", points: 3 },
+                { text: "Aparecem apenas para atender exigências formais.", points: 2 },
+                { text: "Raramente são considerados no processo de planejamento.", points: 1 }
+            ]
+        },
+        {
+            question: "Nas reuniões pedagógicas, os dados de aprendizagem:",
+            options: [
+                { text: "Servem de base para análise, identificação de fragilidades e definição de ações.", points: 3 },
+                { text: "São mencionados de forma pontual, sem aprofundamento.", points: 2 },
+                { text: "Quase nunca entram na pauta das reuniões.", points: 1 }
+            ]
+        },
+        {
+            question: "Para os professores, os resultados das avaliações:",
+            options: [
+                { text: "Ajudam a ajustar metodologias, intervenções e estratégias em sala de aula.", points: 3 },
+                { text: "Funcionam mais como informação geral, sem mudanças significativas na prática.", points: 2 },
+                { text: "Não têm relação com o trabalho pedagógico cotidiano.", points: 1 }
+            ]
+        },
+        {
+            question: "A gestão escolar utiliza os dados principalmente para:",
+            options: [
+                { text: "Acompanhar a aprendizagem e orientar decisões pedagógicas.", points: 3 },
+                { text: "Atender demandas administrativas e prestação de contas.", points: 2 },
+                { text: "Não utiliza ou tem pouco contato com os dados disponíveis.", points: 1 }
+            ]
+        },
+        {
+            question: "Quando a escola identifica baixos resultados de aprendizagem:",
+            options: [
+                { text: "Planeja ações formativas e intervenções pedagógicas específicas.", points: 3 },
+                { text: "Reconhece o problema, mas sem ações sistemáticas.", points: 2 },
+                { text: "Não consegue transformar os dados em encaminhamentos concretos.", points: 1 }
+            ]
+        },
+        {
+            question: "O acompanhamento da aprendizagem dos estudantes:",
+            options: [
+                { text: "É contínuo e orientado por indicadores e evidências.", points: 3 },
+                { text: "Acontece principalmente nos momentos avaliativos formais.", points: 2 },
+                { text: "Não segue critérios claros ou definidos.", points: 1 }
+            ]
+        },
+        {
+            question: "De modo geral, a cultura avaliativa da escola é:",
+            options: [
+                { text: "Formativa e reflexiva, orientando as práticas pedagógicas.", points: 3 },
+                { text: "Mais burocrática, voltada ao cumprimento de normas.", points: 2 },
+                { text: "Pouco estruturada ou ausente.", points: 1 }
+            ]
+        },
+        {
+            question: "Os dados das avaliações influenciam a formação continuada dos professores?",
+            options: [
+                { text: "Sim, orientam temas e estratégias formativas.", points: 3 },
+                { text: "Apenas de forma indireta ou pontual.", points: 2 },
+                { text: "Não há relação entre dados e formação.", points: 1 }
+            ]
+        },
+        {
+            question: "Para a equipe escolar, os dados de avaliação são vistos principalmente como:",
+            options: [
+                { text: "Ferramentas para melhorar a aprendizagem dos estudantes.", points: 3 },
+                { text: "Exigências administrativas do sistema educacional.", points: 2 },
+                { text: "Algo distante da realidade da escola.", points: 1 }
+            ]
+        }
+    ];
+
+    // --- ESTADO DA APLICAÇÃO ---
+    let currentQuestion = 0;
+    let userAnswers = new Array(quizData.length).fill(null); // Armazena pontos de cada questão
+
+    // --- ELEMENTOS DO DOM ---
+    const quizScreen = document.getElementById('quizScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const questionCounter = document.getElementById('questionCounter');
+    const progressBar = document.getElementById('progressBar');
+    const questionText = document.getElementById('questionText');
+    const optionsList = document.getElementById('optionsList');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+
+    // --- INICIALIZAÇÃO ---
+    function initQuiz() {
+        currentQuestion = 0;
+        userAnswers.fill(null);
+        showScreen('quiz');
+        loadQuestion();
+        updateProgress();
+    }
+
+    // --- LÓGICA DE NAVEGAÇÃO ---
+    function loadQuestion() {
+        const data = quizData[currentQuestion];
+        questionText.textContent = data.question;
+        optionsList.innerHTML = '';
+
+        data.options.forEach((option, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = option.text;
+            
+            // Verifica se já foi respondido antes
+            if (userAnswers[currentQuestion] === option.points) {
+                btn.classList.add('selected');
+            }
+
+            btn.onclick = () => selectOption(index, option.points, btn);
+            optionsList.appendChild(btn);
+        });
+
+        // Atualiza estado dos botões de navegação
+        prevBtn.disabled = currentQuestion === 0;
+        nextBtn.disabled = userAnswers[currentQuestion] === null;
+        
+        if (currentQuestion === quizData.length - 1) {
+            nextBtn.textContent = "Ver Resultado";
+        } else {
+            nextBtn.textContent = "Próxima";
+        }
+
+        updateProgress();
+    }
+
+    function selectOption(index, points, btnElement) {
+        // Remove seleção anterior visualmente
+        const allOptions = optionsList.querySelectorAll('.option-btn');
+        allOptions.forEach(opt => opt.classList.remove('selected'));
+        
+        // Adiciona nova seleção
+        btnElement.classList.add('selected');
+        
+        // Salva resposta
+        userAnswers[currentQuestion] = points;
+        
+        // Habilita botão próximo
+        nextBtn.disabled = false;
+        
+        // Opcional: Avanço automático após pequeno delay para melhor UX
+        // setTimeout(() => nextQuestion(), 400); 
+    }
+
+    function nextQuestion() {
+        if (currentQuestion < quizData.length - 1) {
+            currentQuestion++;
+            loadQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestion > 0) {
+            currentQuestion--;
+            loadQuestion();
+        }
+    }
+
+    function updateProgress() {
+        questionCounter.textContent = `Questão ${currentQuestion + 1} de ${quizData.length}`;
+        const progress = ((currentQuestion + 1) / quizData.length) * 100;
+        progressBar.style.width = `${progress}%`;
+    }
+
+    function showScreen(screenName) {
+        if (screenName === 'quiz') {
+            quizScreen.style.display = 'block';
+            resultScreen.style.display = 'none';
+        } else {
+            quizScreen.style.display = 'none';
+            resultScreen.style.display = 'block';
+        }
+    }
+
+    // --- LÓGICA DE RESULTADOS ---
+    function finishQuiz() {
+        const totalScore = userAnswers.reduce((a, b) => a + b, 0);
+        displayResult(totalScore);
+        showScreen('result');
+    }
+
+    function displayResult(score) {
+        const resultContainer = document.getElementById('resultScreen');
+        const finalScoreEl = document.getElementById('finalScore');
+        const titleEl = document.getElementById('resultTitle');
+        const tagEl = document.getElementById('resultTag');
+        const descEl = document.getElementById('resultDescription');
+        const actionEl = document.getElementById('resultAction');
+
+        // Limpa classes anteriores
+        resultContainer.className = 'result-screen';
+
+        finalScoreEl.textContent = score;
+
+        if (score >= 24) {
+            // Perfil A
+            resultContainer.classList.add('profile-a');
+            titleEl.textContent = "Uso Pedagógico dos Dados";
+            tagEl.textContent = "Perfil Avançado";
+            descEl.textContent = "Sua escola utiliza os dados como instrumentos de reflexão, planejamento e melhoria da aprendizagem. As avaliações apoiam decisões pedagógicas, formação docente e acompanhamento contínuo.";
+            actionEl.textContent = "Desafio: Aprofundar a cultura de análise e transformar boas práticas em processos consolidados para que não dependam apenas de iniciativas individuais.";
+        } else if (score >= 17) {
+            // Perfil B
+            resultContainer.classList.add('profile-b');
+            titleEl.textContent = "Uso Predominantemente Burocrático";
+            tagEl.textContent = "Perfil Intermediário";
+            descEl.textContent = "Os dados estão presentes na rotina escolar, mas seu uso ainda se concentra no cumprimento de demandas formais e administrativas, com impacto limitado na prática pedagógica.";
+            actionEl.textContent = "Potencial: Avançar da simples organização dos dados para sua leitura pedagógica coletiva. Comece levando um dado específico para discussão na próxima reunião.";
+        } else {
+            // Perfil C
+            resultContainer.classList.add('profile-c');
+            titleEl.textContent = "Baixo Uso ou Não Uso dos Dados";
+            tagEl.textContent = "Perfil Inicial";
+            descEl.textContent = "Os dados das avaliações ainda não fazem parte do cotidiano pedagógico da escola ou são pouco apropriados pela equipe escolar.";
+            actionEl.textContent = "Oportunidade: Iniciar um processo gradual. Escolha um indicador simples e comece a discuti-lo com a equipe para desmistificar o uso de dados.";
+        }
+    }
+
+    function restartQuiz() {
+        initQuiz();
+    }
+
+    // Iniciar
+    initQuiz();
+
+</script>
+
 </body>
 </html>

@@ -1,4 +1,16 @@
 import observerModule from "../../../services/observerModule.js";
+import fetchData from "../../../services/fetchData.js";
+
+/**
+ * component:changed
+ * Disparado quando um componente tem seu estado alterado (ativado/desativado), ou quando seu modelo ou versão são modificados.
+ *
+ * @param {string} type - O tipo de mudança: 'activation', 'deactivation', 'modelChanged', 'versionChanged'.
+ * @param {string} id - O ID do componente que foi alterado.
+ * @param {string} [key] - A chave que foi alterada (usada para 'modelChanged' e 'versionChanged').
+ * @param {string} [value] - O novo valor associado à chave alterada (usado para 'modelChanged' e 'versionChanged').
+ */
+
 class ProjectState {
   #state = {
     "course-name": "",
@@ -33,40 +45,67 @@ class ProjectState {
       videos: [],
       documents: [],
     },
-    components: [],
+    components: [
+      /**
+       * Lista de parametros de um componente disponível no projeto
+       * {
+       *   id: string,
+       *   name: string,
+       *   models: array,
+       *   versions: array,
+       *   focused: boolean,
+       *   isActive: boolean,
+       *   selectedModel: string || null,
+       *   selectedVersion: string || null,
+       *   alias: string,
+       *   html: string,
+       *   css: string,
+       *   js: string
+       * }
+       */
+    ],
     actualMode: "preview", // edit | preview
   };
 
   constructor() {}
 
   get() {
-    return JSON.parse(JSON.stringify(this.#state));
+    return structuredClone(this.#state);
   }
 
-  #updateAvaliableComponents(
-    componentId,
+  #updateAvailableComponents(
+    id,
     name,
     models,
     versions,
     focused,
-    actived,
-    alias
+    isActive,
+    selectedModel,
+    selectedVersion,
+    alias,
+    html,
+    css,
+    js,
   ) {
-    if (!this.#state.components.includes(componentId)) {
+    if (!this.#state.components.includes(id)) {
       this.#state.components.push({
-        id: componentId,
+        id: id,
         name: name,
         models: models,
         versions: versions,
         focused: focused,
-        actived: actived,
-        alias: alias
+        isActive: isActive,
+        selectedModel: selectedModel,
+        selectedVersion: selectedVersion,
+        alias: alias,
+        html: html,
+        css: css,
+        js: js,
       });
       observerModule.sendNotify("state:changed", {
         type: "possibleComponents",
         components: this.#state.components,
       });
-      
     }
   }
 
@@ -88,6 +127,11 @@ class ProjectState {
         type: "colorScheme",
         colorKey,
         colorValue,
+      });
+      // Update shadowDOM
+      observerModule.sendNotify('shadowDOM:dataChanged', {
+        colorKey,
+        colorValue
       });
     }
   }
@@ -118,6 +162,47 @@ class ProjectState {
     observerModule.sendNotify("state:initialized", this.get());
   }
 
+  /**
+   * 
+   * Toda vez que #reloadComponentFiles é chamado, ele busca os arquivos do componente no backend
+   * e atualiza o estado do projeto com os novos conteúdos.
+   * 
+   * Também dispara notificações específicas para que o shadow DOM e outras partes do sistema
+   * possam reagir às mudanças.
+   * 
+   */
+  #reloadComponentFiles = async (componentId) => {
+    try {
+      const component = this.#find(componentId);
+      if (!component) {
+        console.warn(
+          `[ProjectState] Componente com ID ${componentId} não encontrado para recarregar arquivos.`,
+        );
+        return;
+      }
+      const newData = await fetchData(component);
+
+      // Atualiza o estado para cada tipo de arquivo de forma dinâmica
+      const fileTypes = ["html", "css", "js"];
+      fileTypes.forEach((fileType) => {
+        if (newData[fileType] !== undefined) {
+          this.#updateComponentState(
+            "component:filesLoaded",
+            componentId,
+            fileType,
+            newData[fileType],
+          );
+        }
+
+      });
+    } catch (error) {
+      console.error(
+        `[ProjectState] Falha ao recarregar arquivos para o componente ${componentId}:`,
+        error,
+      );
+    }
+  };
+
   #updateComponenteTempData(componentName, html, css, js) {
     // if (this.#state.colorScheme[colorKey] !== undefined) {
     //   this.#state.colorScheme[colorKey] = colorValue;
@@ -132,50 +217,36 @@ class ProjectState {
     // }
   }
 
-  #updateComponentState(componentId, isActive) {
-    const component = this.#state.components.find(
-      (comp) => comp.id === componentId,
-    );
-    if (component) {
-      component.actived = isActive;
-      observerModule.sendNotify("state:changed", {
-        type: "componentState",
-        componentId,
-        isActive,
-      });
-    }
+  #find(id) {
+    return this.#state.components.find((comp) => comp.id === id);
   }
 
-  #updateModelForComponent(componentId, selectedModel) {
-    const component = this.#state.components.find(
-      (comp) => comp.id === componentId,
-    );
-    if (component) {
-      component.selectedModel = selectedModel;
-      observerModule.sendNotify("state:changed", {
-        type: "componentModel",
-        componentId,
-        selectedModel,
-      });
-    }
+  /**
+   *
+   * @param {*} type : string
+   * @param {*} id : string
+   * @param {*} key : string
+   * @param {*} value : any
+   */
+  #updateComponentState(type, id, key, value) {
+    const component = this.#find(id);
+    if (!component) return;
+    component[key] = value;
+    observerModule.sendNotify("state:changed", {
+      type: type,
+      id: id,
+      key: key,
+      value: value,
+    });
+    console.log(this.#state);
   }
 
-    #updateVersionForComponent(componentId, selectedVersion) {
-    const component = this.#state.components.find(
-      (comp) => comp.id === componentId,
-    );
-    if (component) {
-      component.selectedVersion = selectedVersion;
-      observerModule.sendNotify("state:changed", {
-        type: "componentVersion",
-        componentId,
-        selectedVersion,
-      });
-    }
+  #updateShadowDOMForComponent(id) {
+
   }
 
-  // #loadComponentFilesToTemp(componentId) {
-  //   window.api.loadComponentFilesToTemp(componentId);
+  // #loadComponentFilesToTemp(id) {
+  //   window.api.loadComponentFilesToTemp(id);
   // }
 
   // O método init onde a classe se inscreve para ouvir eventos do MUNDO EXTERNO
@@ -183,13 +254,13 @@ class ProjectState {
     console.log("[ProjectState] Inicializando e ouvindo eventos...");
 
     observerModule.subscribeTo("form:inputChanged", (data) => {
+      const { field, value } = data;
       console.log(`[ProjectState] Ouvi 'form:inputChanged':`, data);
-      this.#updateCourseInfo(data.field, data.value);
+      this.#updateCourseInfo(field, value);
     });
 
     observerModule.subscribeTo("color:changed", (data) => {
       console.log(`[ProjectState] Ouvi 'color:changed':`, data);
-      // console.log(projectState.get());
       this.#updateColor(data.colorKey, data.colorValue);
     });
 
@@ -218,52 +289,65 @@ class ProjectState {
       this.#updateFocusedComponente();
     });
 
-    observerModule.subscribeTo("component:avaliableComponentAdded", (data) => {
+    observerModule.subscribeTo("component:availableComponentAdded", (data) => {
+      const {
+        id,
+        name,
+        models,
+        versions,
+        focused,
+        isActive,
+        selectedModel,
+        selectedVersion,
+        alias,
+        html,
+        css,
+        js,
+      } = data;
+      // É executado apenas uma vez, na inicialização do sistema.
       // Serve para atualizar a lista de componentes possíveis no estado do projeto
-      this.#updateAvaliableComponents(
-        data.componentId,
-        data.name,
-        data.models,
-        data.versions,
-        data.focused,
-        data.actived,
-        data.alias
+      this.#updateAvailableComponents(
+        id,
+        name,
+        models,
+        versions,
+        focused,
+        isActive,
+        selectedModel,
+        selectedVersion,
+        alias,
+        html,
+        css,
+        js,
       );
+    });
+    observerModule.subscribeTo("component:changed", (data) => {
+      const { type, id, key, value } = data;
+      this.#updateComponentState(type, id, key, value);
+    });
+
+    observerModule.subscribeTo("state:changed", async (data) => {
+      // Para debug
+      const { type, id, key, value } = data;
+
+      if (type === "activation" && value === true) {
+        await this.#reloadComponentFiles(id);
+      }
+
+      if (type === "versionChanged" || type === "modelChanged") {
+        await this.#reloadComponentFiles(id);
+      }
+
+      // if (type === "component:filesLoaded") {
+      //   this.#updateShadowDOMForComponent(id);
+      // }
+    });
+
+    // Update shadowDOM
+    observerModule.subscribeTo('shadowDOM:dataChanged', (data) => {
       
     });
 
-    observerModule.subscribeTo("component:activated", (data) => {
-      this.#updateComponentState(data.componentId, true);
-    });
-
-    observerModule.subscribeTo("component:deactivated", (data) => {
-      this.#updateComponentState(data.componentId, false);
-    });
-
-    observerModule.subscribeTo("component:modelChanged", (data) => {
-      // Atualizar o estado do componente com o modelo selecionado
-      this.#updateModelForComponent(data.componentId, data.selectedModel);
-    });
-
-    observerModule.subscribeTo("component:versionChanged", (data) => {
-      // Atualizar o estado do componente com a versão selecionada
-      this.#updateVersionForComponent(data.componentId, data.selectedVersion);
-    });
-
-    // observerModule.subscribeTo("state:changed", (data) => {
-    //   // Atualizar o estado do componente com a versão selecionada
-    //   const targetTypes = ["componentState", "componentModel", "componentVersion"];
-    //   if (targetTypes.includes(data.type)) {
-    //     const componentId = data.componentId;
-    //     const component = this.#state.components.find(
-    //       (comp) => comp.id === componentId,
-    //     );
-    //     if (component && component.actived) {
-    //       // Se o componente está ativo, carregar os arquivos na pasta temp
-    //       this.#loadComponentFilesToTemp(componentId);
-    //     }
-    //   }
-    // });
     // ... outras inscrições
   }
 }

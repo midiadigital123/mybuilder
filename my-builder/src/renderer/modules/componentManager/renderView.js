@@ -39,14 +39,20 @@ const fillLayoutWithComponentsMocked = () => {
     componentBox.appendChild(body);
     componentsContainer.appendChild(componentBox);
     // Envia uma notificação para que projectState saiba dos componentes possíveis
-    observerModule.sendNotify('component:avaliableComponentAdded', 
-      { componentId: component.id,
+    observerModule.sendNotify('component:availableComponentAdded', 
+      {   
+          id: component.id,
           name: component.name,
           models: component.models,
           versions: component.versions,
           focused: false,
-          actived: false,
-          alias: component.alias
+          isActive: false,
+          selectedModel: component.models[0] || null,
+          selectedVersion: component.versions[0] || null,
+          alias: component.alias,
+          html: '',
+          css: '',
+          js: ''
       }); // Inicialmente não está focado nem ativo
 
   });

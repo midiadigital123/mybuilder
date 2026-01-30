@@ -2,6 +2,7 @@ import CONSTANTS from '../../constants/CONSTANTS.js';
 import renderView from './renderView.js';
 import handleStates from './handleStates.js';
 
+
 // const controlActiveComponent = () => {
 // // Seleciona o switch e a caixa
 
@@ -258,6 +259,7 @@ import handleStates from './handleStates.js';
 const init = () => {
   renderView.init();
   handleStates.init();
+  
 };
 
 const componentManagerController = {
