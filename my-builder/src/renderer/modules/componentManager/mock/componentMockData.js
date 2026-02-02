@@ -5,6 +5,13 @@ const componentsData = [
         alias: 'destaque',
         models: ['m1', 'm2', 'm3', 'm4'],
         versions: ["v1", "v2", "v3"],
+        focused: false,
+        isActive: false,
+        selectedModel: 'm1',
+        selectedVersion: 'v1',
+        html: "",
+        css: "",
+        js: ""
     },
         {
         id: 'comp-2',
@@ -12,6 +19,13 @@ const componentsData = [
         alias: 'citacao',
         models: ['m1'],
         versions: ["v1"],
+        focused: false,
+        isActive: false,
+        selectedModel: 'm1',
+        selectedVersion: 'v1',
+        html: "",
+        css: "",
+        js: ""
     },
     {
         id: 'comp-3',
@@ -19,7 +33,15 @@ const componentsData = [
         alias: 'tipografia',
         models: ['m1'],
         versions: ["v1"],
+        focused: false,
+        isActive: false,
+        selectedModel: 'm1',
+        selectedVersion: 'v1',
+        html: "",
+        css: "",
+        js: ""
     }
 ]
 
 export default componentsData;
+

@@ -1,6 +1,6 @@
 import observerModule from "../../../services/observerModule.js";
 import fetchData from "../../../services/fetchData.js";
-import componentsData from "../../modules/componentManager/mock/componentMockData.js";
+
 /**
  * component:changed
  * Disparado quando um componente tem seu estado alterado (ativado/desativado), ou quando seu modelo ou versão são modificados.
@@ -69,34 +69,46 @@ class ProjectState {
 
   constructor() {}
 
-  // Preenche o estado com dados mockados no início do programa
-  #fillStateWithMockData() {
-    componentsData.forEach((component) => {
-      this.#state.components.push({
-        id: component.id,
-        name: component.name,
-        alias: component.alias, 
-        models: component.models,
-        versions: component.versions,
-        focused: component.focused,
-        isActive: component.isActive,
-        selectedModel: component.selectedModel,
-        selectedVersion: component.selectedVersion,
-        html: component.html,
-        css: component.css,
-        js: component.js,
-      });
-    });
-
-  }
-
-  // Função para retornar uma cópia do estado atual
   get() {
     return structuredClone(this.#state);
   }
 
-  // Método para atualizar os dados básicos do formulário
-  // É chamado sempre que o formulário notifica uma mudança
+  #updateAvailableComponents(
+    id,
+    name,
+    models,
+    versions,
+    focused,
+    isActive,
+    selectedModel,
+    selectedVersion,
+    alias,
+    html,
+    css,
+    js,
+  ) {
+    if (!this.#state.components.includes(id)) {
+      this.#state.components.push({
+        id: id,
+        name: name,
+        models: models,
+        versions: versions,
+        focused: focused,
+        isActive: isActive,
+        selectedModel: selectedModel,
+        selectedVersion: selectedVersion,
+        alias: alias,
+        html: html,
+        css: css,
+        js: js,
+      });
+      observerModule.sendNotify("state:changed", {
+        type: "possibleComponents",
+        components: this.#state.components,
+      });
+    }
+  }
+
   #updateCourseInfo(field, value) {
     if (this.#state[field] !== undefined) {
       this.#state[field] = value;
@@ -108,8 +120,6 @@ class ProjectState {
     }
   }
 
-  // Método para atualizar o esquema de cores
-  // É chamado sempre que o seletor de cores notifica uma mudança
   #updateColor(colorKey, colorValue) {
     if (this.#state.colorScheme[colorKey] !== undefined) {
       this.#state.colorScheme[colorKey] = colorValue;
@@ -126,6 +136,32 @@ class ProjectState {
     }
   }
 
+  #updateInitialData(initialData) {
+    for (const key of [
+      "course-name",
+      "course-time",
+      "course-moodle-id",
+      "course-moodle-url",
+      "course-encapsulation-class",
+    ]) {
+      if (initialData[key] !== undefined) {
+        this.#state[key] = initialData[key];
+      }
+    }
+
+    // Atualiza o esquema de cores
+    if (initialData.colorScheme) {
+      for (const [colorKey, colorValue] of Object.entries(
+        initialData.colorScheme,
+      )) {
+        if (this.#state.colorScheme[colorKey] !== undefined) {
+          this.#state.colorScheme[colorKey] = colorValue;
+        }
+      }
+    }
+    observerModule.sendNotify("state:initialized", this.get());
+  }
+
   /**
    * 
    * Toda vez que #reloadComponentFiles é chamado, ele busca os arquivos do componente no backend
@@ -135,7 +171,6 @@ class ProjectState {
    * possam reagir às mudanças.
    * 
    */
-  
   #reloadComponentFiles = async (componentId) => {
     try {
       const component = this.#find(componentId);
@@ -217,8 +252,6 @@ class ProjectState {
   // O método init onde a classe se inscreve para ouvir eventos do MUNDO EXTERNO
   init() {
     console.log("[ProjectState] Inicializando e ouvindo eventos...");
-    this.#fillStateWithMockData();
-    
 
     observerModule.subscribeTo("form:inputChanged", (data) => {
       const { field, value } = data;
@@ -231,13 +264,13 @@ class ProjectState {
       this.#updateColor(data.colorKey, data.colorValue);
     });
 
-    // observerModule.subscribeTo("form:initialDataLoaded", (initialData) => {
-    //   console.log(
-    //     "[ProjectState] Recebendo carga inicial de dados:",
-    //     initialData,
-    //   );
-    //   this.#updateInitialData(initialData);
-    // });
+    observerModule.subscribeTo("form:initialDataLoaded", (initialData) => {
+      console.log(
+        "[ProjectState] Recebendo carga inicial de dados:",
+        initialData,
+      );
+      this.#updateInitialData(initialData);
+    });
 
     observerModule.subscribeTo("component:updateInEditMode", (data) => {
       // Servirá para enviar ao backend os arquivos do componente já com a modificação.
@@ -256,45 +289,64 @@ class ProjectState {
       this.#updateFocusedComponente();
     });
 
-    // observerModule.subscribeTo("component:availableComponentAdded", (data) => {
-    //   const {
-    //     id,
-    //     name,
-    //     models,
-    //     versions,
-    //     focused,
-    //     isActive,
-    //     selectedModel,
-    //     selectedVersion,
-    //     alias,
-    //     html,
-    //     css,
-    //     js,
-    //   } = data;
-    //   // É executado apenas uma vez, na inicialização do sistema.
-    //   // Serve para atualizar a lista de componentes possíveis no estado do projeto
-    //   this.#updateAvailableComponents(
-    //     id,
-    //     name,
-    //     models,
-    //     versions,
-    //     focused,
-    //     isActive,
-    //     selectedModel,
-    //     selectedVersion,
-    //     alias,
-    //     html,
-    //     css,
-    //     js,
-    //   );
-    // });
+    observerModule.subscribeTo("component:availableComponentAdded", (data) => {
+      const {
+        id,
+        name,
+        models,
+        versions,
+        focused,
+        isActive,
+        selectedModel,
+        selectedVersion,
+        alias,
+        html,
+        css,
+        js,
+      } = data;
+      // É executado apenas uma vez, na inicialização do sistema.
+      // Serve para atualizar a lista de componentes possíveis no estado do projeto
+      this.#updateAvailableComponents(
+        id,
+        name,
+        models,
+        versions,
+        focused,
+        isActive,
+        selectedModel,
+        selectedVersion,
+        alias,
+        html,
+        css,
+        js,
+      );
+    });
     observerModule.subscribeTo("component:changed", (data) => {
       const { type, id, key, value } = data;
       this.#updateComponentState(type, id, key, value);
     });
 
+    observerModule.subscribeTo("state:changed", async (data) => {
+      // Para debug
+      const { type, id, key, value } = data;
 
-   
+      if (type === "activation" && value === true) {
+        await this.#reloadComponentFiles(id);
+      }
+
+      if (type === "versionChanged" || type === "modelChanged") {
+        await this.#reloadComponentFiles(id);
+      }
+
+      // if (type === "component:filesLoaded") {
+      //   this.#updateShadowDOMForComponent(id);
+      // }
+    });
+
+    // Update shadowDOM
+    observerModule.subscribeTo('shadowDOM:dataChanged', (data) => {
+      
+    });
 
     // ... outras inscrições
   }

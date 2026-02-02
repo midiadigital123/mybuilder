@@ -23,20 +23,20 @@ const monitorFormSubmit = () => {
 };
 
 // A função que lê o estado ATUAL da UI e notifica
-const loadInitialData = () => {
-    console.log('[FormController] Lendo dados iniciais do DOM...');
-    const initialData = {
-        'course-name': document.getElementById('courseName').value,
-        'course-time': document.getElementById('courseWorkload').value,
-        'course-moodle-id': document.getElementById('moodleId').value,
-        'course-moodle-url': document.getElementById('moodleUrl').value,
-        'course-encapsulation-class': document.getElementById('encapsulateClass').value,
-        colorScheme: {},
-    };
+// const loadInitialData = () => {
+//     console.log('[FormController] Lendo dados iniciais do DOM...');
+//     const initialData = {
+//         'course-name': document.getElementById('courseName').value,
+//         'course-time': document.getElementById('courseWorkload').value,
+//         'course-moodle-id': document.getElementById('moodleId').value,
+//         'course-moodle-url': document.getElementById('moodleUrl').value,
+//         'course-encapsulation-class': document.getElementById('encapsulateClass').value,
+//         colorScheme: {},
+//     };
     
-    // Notifica o estado com um pacote de dados iniciais
-    observerModule.sendNotify('form:initialDataLoaded', initialData);
-};
+//     // Notifica o estado com um pacote de dados iniciais
+//     observerModule.sendNotify('form:initialDataLoaded', initialData);
+// };
 
 
 
@@ -48,7 +48,7 @@ const init = () => {
 
  const formController = {
   init,
-  loadInitialData,
+  // loadInitialData,
 };
 
 export default formController;
