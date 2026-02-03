@@ -1,6 +1,6 @@
-import componentsData from "../componentManager/mock/componentMockData.js";
 import createEl from "../../utils/dom.js";
 import observerModule from "../../../services/observerModule.js";
+import projectState from "../../temp/state/projectState.js";
 
 /**
  * Dados mockados:
@@ -29,6 +29,8 @@ const fillLayoutWithComponentsFromAPI = () => {}; // Em breve
 
   
 const fillLayoutWithComponentsMocked = () => {
+  const componentsData = projectState.get().components;
+  console.log(componentsData)
   const componentsContainer = document.getElementById("components-section");
   componentsData.forEach((component) => {
     // Constrói HTML de cada componente
@@ -38,23 +40,6 @@ const fillLayoutWithComponentsMocked = () => {
     componentBox.appendChild(header);
     componentBox.appendChild(body);
     componentsContainer.appendChild(componentBox);
-    // Envia uma notificação para que projectState saiba dos componentes possíveis
-    observerModule.sendNotify('component:availableComponentAdded', 
-      {   
-          id: component.id,
-          name: component.name,
-          models: component.models,
-          versions: component.versions,
-          focused: false,
-          isActive: false,
-          selectedModel: component.models[0] || null,
-          selectedVersion: component.versions[0] || null,
-          alias: component.alias,
-          html: '',
-          css: '',
-          js: ''
-      }); // Inicialmente não está focado nem ativo
-
   });
 };
 

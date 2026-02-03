@@ -1,5 +1,5 @@
-import observerModule from "../../../services/observerModule.js";
-import fetchData from "../../../services/fetchData.js";
+import observerModule from "../../../../services/observerModule.js";
+import fetchData from "../../../../services/fetchData.js";
 
 /**
  * component:changed

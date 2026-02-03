@@ -35,6 +35,8 @@ import colorPickerController from './modules/colorPicker/colorPickerController.j
 import assetUploadController from './modules/assetUpload/assetUploadController.js';
 import createStandartFolderController from './modules/createStandartFolder/createStandartFolderController.js'
 import componentManagerController from './modules/componentManager/componentManagerController.js';
+import { renderForm } from './config/renderForm.js';
+import shadowDOMController from './modules/componentManager/shadowDOM/shadowDOMController.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -55,12 +57,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cria o estado temporário do projeto em edição
     // tempObject já está importado
-    createStandartFolderController.init();
+    createStandartFolderController.init(); // Cria as pastas padrão do projeto
+    renderForm("#form-container"); // Renderiza os campos do formulário
     projectState.init();
     formController.init();
     colorPickerController.init();
     assetUploadController.init();
     componentManagerController.init();
+    shadowDOMController.init();
+    // livePreviewController.init();
 
 
     // Inicia o módulo do formulário
