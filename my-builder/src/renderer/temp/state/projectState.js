@@ -83,7 +83,7 @@ class ProjectState {
         js: component.js,
       });
     });
-    console.log(this.get());
+    // console.log(this.get());
   }
 
   // Função para retornar uma cópia do estado atual
@@ -132,47 +132,32 @@ class ProjectState {
    *
    */
 
-  #reloadComponentFiles = async (componentId, value) => {
-    console.log(
-      "[ProjectState] Recarregando arquivos para o componente:",
-      componentId,
-    );
-    try {
-      const component = this.#find(componentId);
-      if (!component) {
-        console.warn(
-          `[ProjectState] Componente com ID ${componentId} não encontrado para recarregar arquivos.`,
-        );
-        return;
-      }
-      const newData = await fetchData(component);
-
-      // Atualiza o estado para cada tipo de arquivo de forma dinâmica
-      const fileTypes = ["html", "css", "js"];
-      fileTypes.forEach((fileType) => {
-        if (newData[fileType] !== undefined) {
-          this.#updateComponentState(
-            "component:filesLoaded",
-            componentId,
-            fileType,
-            newData[fileType],
-          );
-        }
-      });
-    } catch (error) {
-      console.error(
-        `[ProjectState] Falha ao recarregar arquivos para o componente ${componentId}:`,
-        error,
-      );
-    }
-  };
+ 
 
   #fetchComponentFiles = async (componentId, value) => {
-    if (value === false) return;
-    console.log(
-      "[ProjectState] Buscando arquivos para o componente:",
-      componentId,
-    );
+    if (value == false) {
+      this.#updateComponentState(
+            "component:cleanFiles",
+            componentId,
+            "html", "",
+          );
+      this.#updateComponentState(
+            "component:cleanFiles",
+            componentId,
+            "css",
+            "",
+          );
+      this.#updateComponentState(
+            "component:cleanFiles",
+            componentId,
+            "js",
+            "",
+          );
+    }
+    // console.log(
+    //   "[ProjectState] Buscando arquivos para o componente:",
+    //   componentId,
+    // );
     try {
       const component = this.#find(componentId);
       if (!component) {
@@ -182,6 +167,7 @@ class ProjectState {
         return;
       }
       const newData = await fetchData(component);
+    
 
       // Atualiza o estado para cada tipo de arquivo de forma dinâmica
       const fileTypes = ["html", "css", "js"];
@@ -235,7 +221,7 @@ class ProjectState {
   }
 
   #updateComponentState(type, id, key, value) {
-    console.log(type, id, key, value);
+    // console.log(type, id, key, value);
     const component = this.#find(id);
     if (!component) return;
     component[key] = value;
@@ -245,7 +231,7 @@ class ProjectState {
       key: key,
       value: value,
     });
-    console.log(this.#state);
+    // console.log(this.#state);
   }
 
   #updateData() {}
@@ -307,10 +293,6 @@ class ProjectState {
       );
     });
 
-    observerModule.subscribeTo("component:setFocus", (data) => {
-      // Servirá para enviar ao shadowDom(visualização e edit) a informação de qual componente mostrar.
-      this.#updateFocusedComponente(id, value);
-    });
 
     // observerModule.subscribeTo("component:changed", (data) => {
     //   const { type, id, key, value } = data;
@@ -328,70 +310,81 @@ class ProjectState {
     //   }
     // });
 
-    observerModule.subscribeTo("component:setActivation", (data) => {
-      // data.id e data.value
+    /**
+     * Na ativação do componente preciso:
+     * 1) atualizar o estado isActive do componente
+     * 2) atualizar o estado focused do componente
+     * 3) buscar os arquivos da versão ativa 
+     * e carregá-los no shadowDOM.
+     * 
+     * No setFocus apenas atualizo o shadowDOM com o conteúdo do componente focado.
+     * 
+     * Na mudança de modelo ou versão, preciso buscar os arquivos correspondentes
+     * e atualizar o shadowDOM.
+     */
+
+    observerModule.subscribeTo("component:setActivation", async (data) => {
+      console.log("setActivation")
+      // Atualiza o estado isActive do componente
       this.#updateComponentState(
         "setActivation",
         data.id,
         "isActive",
         data.value,
       );
-      this.#fetchComponentFiles(data.id, data.value);
-      // FIXME: Quando ativo ou desativo um componente o ele não está
-      // na mesma hora o conteúdo do shadowDOM.
-      // this.#reloadComponentFiles(data.id, data.value);
+
+      console.log(data.id, data.value)
+      // Atualiza o state com os arquivos do componente
+      await this.#fetchComponentFiles(data.id, data.value);
       if (data.value === false) {
         observerModule.sendNotify("shadowDOM:cleanPreview", {});
       } else {
-        const newData = this.#getContentFiles(data.id);
-        observerModule.sendNotify("shadowDOM:updatePreview", {
-          componentId: data.id,
-          html: newData.html,
-          css: newData.css,
-          js: newData.js,
-        });
+        // console.log("caiu aquii!!")
+        this.#updateFocusedComponente(data.id, data.value);
       }
     });
 
     observerModule.subscribeTo("component:setFocus", (data) => {
-      this.#updateComponentState("setFocus", data.id, "focused", data.value);
+      // console.log("setFocus")
+      this.#updateComponentState(
+        "setFocus",
+        data.id,
+        "focused",
+        data.value,
+      );
       this.#updateFocusedComponente(data.id, data.value);
     });
 
-    observerModule.subscribeTo("component:setModel", (data) => {
+    observerModule.subscribeTo("component:setModel", async (data) => {
+      console.log("setModel")
+      // Atualiza o estado focused do componente
       this.#updateComponentState(
         "setModel",
         data.id,
         "selectedModel",
         data.value,
       );
-      this.#fetchComponentFiles(data.id, data.value);
 
-      const newData = this.#getContentFiles(data.id);
-      observerModule.sendNotify("shadowDOM:updatePreview", {
-        componentId: data.id,
-        html: newData.html,
-        css: newData.css,
-        js: newData.js,
-      });
+      // Atualiza o state com os arquivos do componente
+      await this.#fetchComponentFiles(data.id, data.value);
+      
     });
 
-    observerModule.subscribeTo("component:setVersion", (data) => {
+    observerModule.subscribeTo("component:setVersion", async (data) => {
+       console.log("setVersion")
+      // Atualiza o estado focused do componente
       this.#updateComponentState(
         "setVersion",
         data.id,
         "selectedVersion",
         data.value,
       );
-      this.#fetchComponentFiles(data.id, data.value);
-      const newData = this.#getContentFiles(data.id);
-      observerModule.sendNotify("shadowDOM:updatePreview", {
-        componentId: data.id,
-        html: newData.html,
-        css: newData.css,
-        js: newData.js,
+
+      // Atualiza o state com os arquivos do componente
+      await this.#fetchComponentFiles(data.id, data.value);
+      
       });
-    });
+     
 
     // ... outras inscrições
   }

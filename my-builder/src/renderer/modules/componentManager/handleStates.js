@@ -26,10 +26,6 @@ const manageComponentActivity = () => {
           id: box.id,
           value: true,
         });
-        observerModule.sendNotify("component:setFocus", {
-          id: box.id,
-          value: true,
-        });
         // insertDataIntoShadowDOM(box);
       } else {
         box.classList.remove("active"); // Remove classe para fechar
@@ -38,26 +34,30 @@ const manageComponentActivity = () => {
           id: box.id,
           value: false,
         });
-        observerModule.sendNotify("component:setFocus", {
-          id: box.id,
-          value: false,
-        });
       }
     });
 
+
     const header = box.querySelector(".box-header");
-    header.addEventListener("click", () => {
-      componentesBox.forEach((otherBox) => {
+    header.addEventListener("click", (e) => {
+      let insideToggle = box.querySelector(".component-toggle");
+      if (insideToggle.checked) {
+        componentesBox.forEach((otherBox) => {
         if (otherBox !== box) {
           otherBox.setAttribute("focused", "false");
         }
       });
       box.setAttribute("focused", "true");
-
-      observerModule.sendNotify("component:setFocus", {
+       observerModule.sendNotify("component:setFocus", {
         id: box.id,
         value: true,
       });
+      } else {
+        
+      }
+      
+
+     
     });
   });
 };

@@ -31,7 +31,7 @@ const fetchData = async (data) => {
     result.html = htmlContent;
     result.css = cssContent;
     result.js = jsContent;
-    console.log("Conteúdos obtidos:", { htmlContent, cssContent, jsContent });
+    // console.log("Conteúdos obtidos:", { htmlContent, cssContent, jsContent });
     return result;
   } catch (error) {
     console.error("Erro ao buscar os arquivos do componente:", error);

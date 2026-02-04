@@ -15,6 +15,13 @@
     border-color: #444;
 }
 
+.component-box.active .box-header {
+    cursor: pointer;
+}
+
+.component-box.active .box-header:hover{
+    background-color: rgba(255,255,255,0.05);
+}
 /* --- CABEÇALHO --- */
 .box-header {
     padding: 15px 20px;
