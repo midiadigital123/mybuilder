@@ -13,32 +13,51 @@ const manageComponentActivity = () => {
     // Escuta o clique no switch
     toggle.addEventListener("change", function () {
       if (this.checked) {
+        console.log("entrou");
         box.classList.add("active"); // Adiciona classe para abrir
         // Adiciona false aos outros componentes
         componentesBox.forEach((otherBox) => {
           if (otherBox !== box) {
-            otherBox.setAttribute("active-view", "false");
+            otherBox.setAttribute("focused", "false");
           }
         });
-        box.setAttribute("active-view", "true");
-        observerModule.sendNotify("component:changed", {
-          type: "activation",
+        box.setAttribute("focused", "true");
+        observerModule.sendNotify("component:setActivation", {
           id: box.id,
-          key: "isActive",
           value: true,
         });
-
+        observerModule.sendNotify("component:setFocus", {
+          id: box.id,
+          value: true,
+        });
         // insertDataIntoShadowDOM(box);
       } else {
         box.classList.remove("active"); // Remove classe para fechar
-        box.setAttribute("active-view", "false");
-        observerModule.sendNotify("component:changed", {
-          type: "activation",
+        box.setAttribute("focused", "false");
+        observerModule.sendNotify("component:setActivation", {
           id: box.id,
-          key: "isActive",
+          value: false,
+        });
+        observerModule.sendNotify("component:setFocus", {
+          id: box.id,
           value: false,
         });
       }
+    });
+
+    const header = box.querySelector(".box-header");
+    header.addEventListener("click", () => {
+      componentesBox.forEach((otherBox) => {
+        if (otherBox !== box) {
+          otherBox.setAttribute("focused", "false");
+        }
+      });
+      box.setAttribute("focused", "true");
+
+      observerModule.sendNotify("component:setFocus", {
+        id: box.id,
+        value: true,
+      });
     });
   });
 };
@@ -51,7 +70,7 @@ const watchModelAndVersionChanges = () => {
       const componentBox = target.closest(".component-box");
       const componentId = componentBox.id;
       const selectedModel = target.value;
-      observerModule.sendNotify("component:changed", {
+      observerModule.sendNotify("component:setModel", {
         type: "modelChanged",
         id: componentId,
         key: "selectedModel",
@@ -61,7 +80,7 @@ const watchModelAndVersionChanges = () => {
       const componentBox = target.closest(".component-box");
       const componentId = componentBox.id;
       const selectedVersion = target.value;
-      observerModule.sendNotify("component:changed", {
+      observerModule.sendNotify("component:setVersion", {
         type: "versionChanged",
         id: componentId,
         key: "selectedVersion",

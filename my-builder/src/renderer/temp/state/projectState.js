@@ -115,7 +115,7 @@ class ProjectState {
         colorValue,
       });
       // Update shadowDOM
-      observerModule.sendNotify("shadowDOM:dataChanged", {
+      observerModule.sendNotify("shadowDOM:color:changed", {
         colorKey,
         colorValue,
       });
@@ -137,20 +137,6 @@ class ProjectState {
       "[ProjectState] Recarregando arquivos para o componente:",
       componentId,
     );
-    if (value === false) {
-      // Se o componente foi desativado, limpamos os arquivos do estado e notificamos o shadow DOM para limpar a visualização.
-      this.#updateComponentState(
-        "component:filesLoaded",
-        componentId,
-        "html",
-        "",
-      );
-      observerModule.sendNotify("shadowDOM:componentDataChanged", {
-        componentId,
-        value: false,
-      });
-      return;
-    }
     try {
       const component = this.#find(componentId);
       if (!component) {
@@ -173,11 +159,41 @@ class ProjectState {
           );
         }
       });
-      observerModule.sendNotify("shadowDOM:componentDataChanged", {
-        componentId,
-        html: newData.html,
-        css: newData.css,
-        js: newData.js,
+    } catch (error) {
+      console.error(
+        `[ProjectState] Falha ao recarregar arquivos para o componente ${componentId}:`,
+        error,
+      );
+    }
+  };
+
+  #fetchComponentFiles = async (componentId, value) => {
+    if (value === false) return;
+    console.log(
+      "[ProjectState] Buscando arquivos para o componente:",
+      componentId,
+    );
+    try {
+      const component = this.#find(componentId);
+      if (!component) {
+        console.warn(
+          `[ProjectState] Componente com ID ${componentId} não encontrado para recarregar arquivos.`,
+        );
+        return;
+      }
+      const newData = await fetchData(component);
+
+      // Atualiza o estado para cada tipo de arquivo de forma dinâmica
+      const fileTypes = ["html", "css", "js"];
+      fileTypes.forEach((fileType) => {
+        if (newData[fileType] !== undefined) {
+          this.#updateComponentState(
+            "component:filesLoaded",
+            componentId,
+            fileType,
+            newData[fileType],
+          );
+        }
       });
     } catch (error) {
       console.error(
@@ -194,11 +210,24 @@ class ProjectState {
     // }
   }
 
-  #updateFocusedComponente() {
-    // if (this.#state.colorScheme[colorKey] !== undefined) {
-    //   this.#state.colorScheme[colorKey] = colorValue;
-    //   observerModule.sendNotify('state:changed', { type: 'colorScheme', colorKey, colorValue });
-    // }
+  #updateFocusedComponente(componentId, value) {
+    // Pega todos os componentes
+    const allComponents = this.#state.components;
+    // Define focused como false para todos
+    allComponents.forEach((comp) => {
+      comp.focused = false;
+    });
+
+    // Define focused como true para o componente específico
+    const component = this.#find(componentId);
+    if (!component) return;
+    component.focused = value;
+    observerModule.sendNotify("shadowDOM:updatePreview", {
+      componentId: componentId,
+      html: component.html,
+      css: component.css,
+      js: component.js,
+    });
   }
 
   #find(id) {
@@ -227,21 +256,43 @@ class ProjectState {
   //   window.api.loadComponentFilesToTemp(id);
   // }
 
+  #getContentFiles(id) {
+    const component = this.#find(id);
+    if (!component) return;
+    return {
+      html: component.html,
+      css: component.css,
+      js: component.js,
+    };
+  }
+
   // O método init onde a classe se inscreve para ouvir eventos do MUNDO EXTERNO
   init() {
     // console.log("[ProjectState] Inicializando e ouvindo eventos...");
-    // Preencher state com dados mockados
+
+    /**
+     * Preenche o estado com dados mockados no início do programa
+     */
     this.#fillStateWithMockData();
 
+    /**
+     * Ouve mudanças nos inputs do formulário principal
+     */
     observerModule.subscribeTo("form:inputChanged", (data) => {
       const { id, value } = data;
       console.log(`[ProjectState] Ouvi 'form:inputChanged':`, data);
       this.#updateCourseInfo(id, value);
     });
 
+    /**
+     * Ouve mudanças nas cores do tema
+     */
     observerModule.subscribeTo("color:changed", (data) => {
       console.log(`[ProjectState] Ouvi 'color:changed':`, data);
       this.#updateColor(data.colorKey, data.colorValue);
+      // Atualiza o shadow DOM com as novas cores
+      // TODO: Colocar aqui o update do shadow DOM.
+      // FIXME:
     });
 
     observerModule.subscribeTo("component:updateInEditMode", (data) => {
@@ -258,19 +309,87 @@ class ProjectState {
 
     observerModule.subscribeTo("component:setFocus", (data) => {
       // Servirá para enviar ao shadowDom(visualização e edit) a informação de qual componente mostrar.
-      this.#updateFocusedComponente();
+      this.#updateFocusedComponente(id, value);
     });
 
-    observerModule.subscribeTo("component:changed", (data) => {
-      const { type, id, key, value } = data;
-      this.#updateComponentState(type, id, key, value);
-      if (
-        type === "modelChanged" ||
-        type === "versionChanged" ||
-        type === "activation"
-      ) {
-        this.#reloadComponentFiles(id, value);
+    // observerModule.subscribeTo("component:changed", (data) => {
+    //   const { type, id, key, value } = data;
+    //   this.#updateComponentState(type, id, key, value);
+    //   if (
+    //     type === "modelChanged" ||
+    //     type === "versionChanged" ||
+    //     type === "activation"
+    //   ) {
+    //     this.#reloadComponentFiles(id, value);
+    //   }
+
+    //   if (type === "focused") {
+    //     this.#updateFocusedComponente(id, value);
+    //   }
+    // });
+
+    observerModule.subscribeTo("component:setActivation", (data) => {
+      // data.id e data.value
+      this.#updateComponentState(
+        "setActivation",
+        data.id,
+        "isActive",
+        data.value,
+      );
+      this.#fetchComponentFiles(data.id, data.value);
+
+      // this.#reloadComponentFiles(data.id, data.value);
+      if (data.value === false) {
+        observerModule.sendNotify("shadowDOM:cleanPreview", {});
+      } else {
+        const newData = this.#getContentFiles(data.id);
+        observerModule.sendNotify("shadowDOM:updatePreview", {
+          componentId: data.id,
+          html: newData.html,
+          css: newData.css,
+          js: newData.js,
+        });
       }
+    });
+
+    observerModule.subscribeTo("component:setFocus", (data) => {
+      this.#updateComponentState("setFocus", data.id, "focused", data.value);
+      this.#updateFocusedComponente(data.id, data.value);
+    });
+
+    observerModule.subscribeTo("component:setModel", (data) => {
+      this.#updateComponentState(
+        "setModel",
+        data.id,
+        "selectedModel",
+        data.value,
+      );
+      this.#fetchComponentFiles(data.id, data.value);
+
+      const newData = this.#getContentFiles(data.id);
+      observerModule.sendNotify("shadowDOM:updatePreview", {
+        componentId: data.id,
+        html: newData.html,
+        css: newData.css,
+        js: newData.js,
+      });
+    });
+
+    observerModule.subscribeTo("component:setVersion", (data) => {
+      this.#updateComponentState(
+        "setVersion",
+        data.id,
+        "selectedVersion",
+        data.value,
+      );
+      this.#fetchComponentFiles(data.id, data.value);
+      const newData = this.#getContentFiles(data.id);
+      observerModule.sendNotify("shadowDOM:updatePreview", {
+        componentId: data.id,
+        html: newData.html,
+        css: newData.css,
+        js: newData.js,
+      });
     });
 
     // ... outras inscrições

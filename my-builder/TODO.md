@@ -5,7 +5,7 @@
     -> Preciso definir a lista de componentes e separar CSS, JS e HTML de cada um.
     -> Preciso criar a função do backend que monta a estrutura e cria as pastas finais para inserir os arquivos buildados.
 
-
+// TODO: Fazer a build do SASS para gerar o CSS final.
 
 # O que precisa melhorar?
 -> Preciso melhorar a nomeação dos elementos(principalmente botões clicáveis). Centralizar a lógica é necessário.

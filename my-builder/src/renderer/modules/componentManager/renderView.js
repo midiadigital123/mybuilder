@@ -50,7 +50,7 @@ const buildComponentBox = (component) => {
         id: component.id,
         attributes: { 
             'data-comp': component.id, 
-            'active-view': 'false',
+            'focused': 'false',
             'alias': component.alias
         }
     });
