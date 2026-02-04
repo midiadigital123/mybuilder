@@ -337,7 +337,8 @@ class ProjectState {
         data.value,
       );
       this.#fetchComponentFiles(data.id, data.value);
-
+      // FIXME: Quando ativo ou desativo um componente o ele não está
+      // na mesma hora o conteúdo do shadowDOM.
       // this.#reloadComponentFiles(data.id, data.value);
       if (data.value === false) {
         observerModule.sendNotify("shadowDOM:cleanPreview", {});
