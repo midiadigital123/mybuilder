@@ -53,3 +53,5 @@ LIB de Highlight: https://highlightjs.org/
 -> Eu posso separar em 4 módulos(seções), po, tranquilamente. Se mais um passo for inserido é só mais um módulo. Cada módulo vai ter os scripts associados aos componentes daquela seção. 
 
 
+
+TESTE
