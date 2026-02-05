@@ -30,7 +30,6 @@ const fillLayoutWithComponentsFromAPI = () => {}; // Em breve
   
 const fillLayoutWithComponentsMocked = () => {
   const componentsData = projectState.get().components;
-  console.log(componentsData)
   const componentsContainer = document.getElementById("components-section");
   componentsData.forEach((component) => {
     // Constrói HTML de cada componente

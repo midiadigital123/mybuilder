@@ -7,7 +7,7 @@ const monitorTextInputs = () => {
     if (event.target.tagName === 'INPUT' && event.target.type === 'text') {
       const id = event.target.id;
       const value = event.target.value;
-      console.log(`[FormController] Notificando 'form:inputChanged' para o campo ${id}`);
+      // console.log(`[FormController] Notificando 'form:inputChanged' para o campo ${id}`);
       observerModule.sendNotify('form:inputChanged', { id, value });
     }
   });

@@ -12,6 +12,7 @@ class shadowDOM {
   const shadowHost = document.getElementById("preview-shadow-host");
   // Cria o shadow root
   const shadowRoot = shadowHost.attachShadow({ mode: "open" });
+  shadowHost.style.height = "100%";
   // console.log(projectState.get().colorScheme);
   /*const updateColorsInShadowDOM = () => {
     // Atualiza as cores no shadow DOM
@@ -61,6 +62,7 @@ class shadowDOM {
    */
   updateShadowDOM() {
   observerModule.subscribeTo("shadowDOM:color:changed", (data) => {
+    // console.log("shadowDOM:color:changed recebido no shadowDOMController:", data);
     const shadowHost = document.getElementById("preview-shadow-host");
     const shadowRoot = shadowHost.shadowRoot;
     const style = shadowRoot.querySelector("#project-styles");
@@ -105,8 +107,28 @@ class shadowDOM {
   });
   }
 
-}
+  setThemeMode() {
+    const shadowHost = document.getElementById("preview-shadow-host");
+    const shadowRoot = shadowHost.shadowRoot;
+    const previewContent = shadowRoot.querySelector(".preview-content");
+    // console.log("Definindo o modo de tema no shadow DOM:", projectState.get().themeMode);
+    const lightModeBtn = document.getElementById("light-mode-btn");
+    const darkModeBtn = document.getElementById("dark-mode-btn");
 
+    lightModeBtn.addEventListener("click", () => {
+      previewContent.setAttribute("data-bs-theme", "light");
+      darkModeBtn.classList.remove("active");
+      lightModeBtn.classList.add("active");
+    });
+
+    darkModeBtn.addEventListener("click", () => {
+      previewContent.setAttribute("data-bs-theme", "dark");
+      lightModeBtn.classList.remove("active");
+      darkModeBtn.classList.add("active");
+    });
+
+  }
+}
 
 
 const init = () => {
@@ -117,6 +139,7 @@ const init = () => {
   //3) Configurar o observador para mudanças de cores
 
   shadowDOMInstance.insertShadowDOM();
+  shadowDOMInstance.setThemeMode();
   shadowDOMInstance.updateShadowDOM();
   // Configurar observador para atualizar o shadow DOM com os dados do componente ativo
   // insertDataIntoShadowDOM();

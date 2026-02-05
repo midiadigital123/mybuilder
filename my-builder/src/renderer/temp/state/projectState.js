@@ -17,22 +17,22 @@ class ProjectState {
     "course-time": "",
     "course-encapsulation-class": "",
     colorScheme: {
-      "primary-color-light": "#000000",
-      "primary-color-dark": "#000000",
-      "secondary-color-light": "#ffffff",
-      "secondary-color-dark": "#ffffff",
-      "intermediate-color-1-light": "#cccccc",
-      "intermediate-color-2-light": "#999999",
-      "intermediate-color-3-light": "#666666",
-      "intermediate-color-1-bg-light": "#f0f0f0",
-      "intermediate-color-2-bg-light": "#e0e0e0",
-      "intermediate-color-3-bg-light": "#d0d0d0",
-      "intermediate-color-1-dark": "#444444",
-      "intermediate-color-2-dark": "#777777",
-      "intermediate-color-3-dark": "#aaaaaa",
-      "intermediate-color-1-bg-dark": "#2c2c2c",
-      "intermediate-color-2-bg-dark": "#3c3c3c",
-      "intermediate-color-3-bg-dark": "#4c4c4c",
+      "base1-light": "#014ff1",
+      "base1-dark": "#013ebc",
+      "base2-light": "#338fe5",
+      "base2-dark": "#1a76cc",
+      "intermediaria1-light": "#00b0c1",
+      "intermediaria1-bg-light": "#00dff5",
+      "intermediaria1-dark": "#00828f",
+      "intermediaria1-bg-dark": "#00b1c2",
+      "intermediaria2-light": "#999999",
+      "intermediaria2-dark": "#777777",
+      "intermediaria2-bg-light": "#e0e0e0",
+      "intermediaria2-bg-dark": "#3c3c3c",
+      "intermediaria3-light": "#666666",
+      "intermediaria3-dark": "#aaaaaa",
+      "intermediaria3-bg-light": "#d0d0d0",
+      "intermediaria3-bg-dark": "#4c4c4c",
       "active-light": "#0d6efd",
       "active-dark": "#0d6efd",
       "active-hover-light": "#0b5ed7",
@@ -266,7 +266,7 @@ class ProjectState {
      */
     observerModule.subscribeTo("form:inputChanged", (data) => {
       const { id, value } = data;
-      console.log(`[ProjectState] Ouvi 'form:inputChanged':`, data);
+      // console.log(`[ProjectState] Ouvi 'form:inputChanged':`, data);
       this.#updateCourseInfo(id, value);
     });
 
@@ -274,7 +274,7 @@ class ProjectState {
      * Ouve mudanças nas cores do tema
      */
     observerModule.subscribeTo("color:changed", (data) => {
-      console.log(`[ProjectState] Ouvi 'color:changed':`, data);
+      // console.log(`[ProjectState] Ouvi 'color:changed':`, data);
       this.#updateColor(data.colorKey, data.colorValue);
       // Atualiza o shadow DOM com as novas cores
       // TODO: Colocar aqui o update do shadow DOM.
@@ -324,7 +324,7 @@ class ProjectState {
      */
 
     observerModule.subscribeTo("component:setActivation", async (data) => {
-      console.log("setActivation")
+      // console.log("setActivation")
       // Atualiza o estado isActive do componente
       this.#updateComponentState(
         "setActivation",
@@ -333,7 +333,7 @@ class ProjectState {
         data.value,
       );
 
-      console.log(data.id, data.value)
+      // console.log(data.id, data.value)
       // Atualiza o state com os arquivos do componente
       await this.#fetchComponentFiles(data.id, data.value);
       if (data.value === false) {
@@ -356,7 +356,7 @@ class ProjectState {
     });
 
     observerModule.subscribeTo("component:setModel", async (data) => {
-      console.log("setModel")
+      // console.log("setModel")
       // Atualiza o estado focused do componente
       this.#updateComponentState(
         "setModel",
@@ -371,7 +371,7 @@ class ProjectState {
     });
 
     observerModule.subscribeTo("component:setVersion", async (data) => {
-       console.log("setVersion")
+      //  console.log("setVersion")
       // Atualiza o estado focused do componente
       this.#updateComponentState(
         "setVersion",

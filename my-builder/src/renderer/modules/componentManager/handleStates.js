@@ -13,7 +13,6 @@ const manageComponentActivity = () => {
     // Escuta o clique no switch
     toggle.addEventListener("change", function () {
       if (this.checked) {
-        console.log("entrou");
         box.classList.add("active"); // Adiciona classe para abrir
         // Adiciona false aos outros componentes
         componentesBox.forEach((otherBox) => {
