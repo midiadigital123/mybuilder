@@ -1,0 +1,410 @@
+@import './variables.css';
+
+/* O Container Principal */
+.component-box {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden; /* Importante para animações suaves */
+    margin-bottom: 15px;
+    transition: border-color 0.3s;
+}
+
+/* Efeito visual ao passar o mouse no box inteiro */
+.component-box:hover {
+    border-color: #444;
+}
+
+.component-box.active .box-header {
+    cursor: pointer;
+}
+
+.component-box.active .box-header:hover{
+    background-color: rgba(255,255,255,0.05);
+}
+/* --- CABEÇALHO --- */
+.box-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(255,255,255,0.02);
+}
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-info h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #e0e0e0;
+    font-weight: 500;
+}
+
+.icon-wrapper {
+    color: #888;
+}
+
+/* --- O CORPO (CONTEÚDO) --- */
+.box-body {
+    display: none; /* ESCONDIDO POR PADRÃO */
+    padding: 20px;
+    border-top: 1px solid #333;
+    background-color: #161616;
+}
+
+/* LÓGICA DE ABERTURA: Quando o pai tem a classe .active, o corpo aparece */
+.component-box.active .box-body {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- ESTILOS DOS CONTROLES INTERNOS --- */
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.option-group label {
+    display: block;
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.option-group select {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: #252525;
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.custom-actions {
+    display: flex;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #2a2a2a;
+}
+
+.btn-secondary, .btn-primary {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid #444;
+    color: #aaa;
+}
+
+.btn-primary {
+    background-color: var(--primary, #3b82f6);
+    color: var(--border);
+}
+
+/* --- CSS DO TOGGLE (SWITCH) --- */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #444;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+/* Estilo quando o Switch está marcado (Ligado) */
+input:checked + .slider {
+    background-color: var(--primary, #3b82f6);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.main-layout {
+    display: flex;
+    height: 500px; /* Altura fixa para demonstração */
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #1e1e1e;
+}
+
+/* --- PAINEL ESQUERDO (CONTROLES) --- */
+.left-panel {
+    width: 35%; /* Solicitado: 35% */
+    background-color: #1e1e1e;
+    border-right: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* --- PAINEL DIREITO (VISUALIZAÇÃO) --- */
+.right-panel {
+    width: 65%; /* Complementar aos 35% do painel esquerdo */
+    background-color: #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
+}
+
+
+.preview {
+    flex: 1;
+    border-bottom: 1px solid #333;
+    color: #ccc;
+    overflow: auto;
+    display: none;
+}
+
+[active-context].preview {
+    display: block;
+}
+
+.preview .prev-header {
+    height: 50px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 0 15px;
+    border-bottom: 1px solid #555;
+}
+
+.prev-header .eye-icon {
+    display: flex;
+    color: var(--primary);
+    padding: 0;
+    margin: 0;
+
+}
+.preview .prev-body {
+    padding: 15px;
+    font-size: 1rem;
+    background-color: white;
+    height: calc(100% - 50px);
+}
+
+.code-edit {
+    flex: 1;
+    border-top: 1px solid #333;
+    /* padding: 15px; */
+    color: #ccc;
+    overflow: auto;
+    display: none;
+}
+
+[active-context].code-edit {
+    display: block;
+}
+
+/* ÍCONE DE OLHO */
+.eye-icon {
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    /* display: none; */
+     transition: all 0.3s;
+      padding: 2px 5px;
+      border-radius: 5px;
+}
+
+.eye-icon:hover {
+    color: var(--primary); /* Azul ao passar o mouse */
+     transition: all 0.3s;
+}
+
+
+
+[active-view="true"] .eye-icon{
+    color: black;
+    background-color: var(--primary);
+    padding: 2px 5px;
+    border-radius: 5px;
+    display: flex;
+    transition: all 0.3s;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+#light-mode-btn, #dark-mode-btn {
+    background-color: #666;
+    color: var(--border);
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+
+}
+
+#light-mode-btn.active, #dark-mode-btn.active{
+   background-color: var(--primary, #3b82f6);
+    color: var(--border);
+}
+
+.edit-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--primary-light);
+    padding-bottom: 1rem;
+    padding: .5rem 1rem;
+    height: 50px;
+}
+
+.edit-header .save-and-apply{
+    background-color: var(--primary, #3b82f6);
+    color: var(--border);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.edit-tabs{
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--primary-light);
+    padding: 0 1rem;
+    height: 30px;
+}
+
+.edit-body{
+    height: calc(100% - 90px); /* Ajuste para considerar o cabeçalho e abas */
+}
+
+.edit-tabs .tab-button{
+    background-color: transparent;
+    color: #ccc;
+    border: none;
+    padding: 6px 10px ;
+    cursor: pointer;
+    
+    font-weight: 500;
+}
+
+.edit-tabs .tab-button.active{
+    border-top: 2px solid var(--primary, #3b82f6);
+    color: var(--primary, #3b82f6);
+    background-color: var(--primary-light);
+}
+
+.btn-customization{
+    background-color: var(--primary, #3b82f6);
+    color: var(--border);
+}
+
+.btn-customization.disabled{
+    background-color: #444;
+    color: #888;
+    cursor: not-allowed;
+}
+
+/* --- CONTAINER DO EDITOR --- */
+.edit-body {
+    flex: 1; /* Ocupa todo o espaço restante do pai */
+    padding: 0; /* Padding zero, o textarea cuida do próprio */
+    background-color: #1e1e1e;
+    position: relative;
+    overflow: hidden; /* Impede scroll duplo no container pai */
+}
+
+/* --- TEXTAREA (O EDITOR) --- */
+#code-textarea {
+    width: 100%;
+    height: 100%;
+    background-color: #121212; /* Fundo "Deep Dark" estilo IDE */
+    color: #e5e7eb; /* Texto cinza claro */
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 20px;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6; /* Altura da linha generosa para leitura */
+    resize: none; /* Remove o quadrado de redimensionar do canto */
+    outline: none;
+    tab-size: 4; /* Define o tamanho da tecla TAB */
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+}
+
+/* --- ESTADO DE FOCO --- */
+#code-textarea:focus {
+    border-color: var(--primary); /* Borda azul ao clicar */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); /* Brilho sutil */
+}
+
+/* --- SCROLLBARS CUSTOMIZADAS (Crucial para o "Vibe" de IDE) --- */
+#code-textarea::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+#code-textarea::-webkit-scrollbar-track {
+    background-color: #121212; /* Combina com o fundo */
+    border-radius: 6px;
+}
+
+#code-textarea::-webkit-scrollbar-thumb {
+    background-color: #374151; /* Cinza médio */
+    border-radius: 6px;
+    border: 3px solid #121212; /* Cria um espaçamento visual fino */
+}
+
+#code-textarea::-webkit-scrollbar-thumb:hover {
+    background-color: #4b5563; /* Fica mais claro ao passar o mouse */
+}
+
+/* --- PLACEHOLDER (Texto de sugestão) --- */
+#code-textarea::placeholder {
+    color: #4b5563;
+    font-style: italic;
+}
