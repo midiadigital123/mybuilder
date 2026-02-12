@@ -306,6 +306,7 @@ class ProjectState {
     }
 
     this.#registerEventHandlers();
+    console.log("ProjectState initialized with state:", this.#state);
   }
 }
 
