@@ -1,3 +1,36 @@
+# Sugestão: Refatoração do handleStates.js
+
+**Data:** 2026-02-12  
+**Tipo:** Bug Fix / Refatoração  
+**Prioridade:** Alta
+
+---
+
+## 🐛 Problema Identificado
+
+O evento de clique no header estava sendo disparado junto com o evento de change do toggle, causando:
+
+1. Usuário desativa componente (toggle change)
+2. `component:setActivation` com `value: false` → `clearPreview()`
+3. **MAS** o clique propaga para o header
+4. `component:setFocus` dispara → `updatePreview()` sobrescreve o clear
+
+---
+
+## 🔧 Solução
+
+Reescrever a função usando:
+- **Event delegation** (um listener no container ao invés de vários)
+- **Flag de controle** para evitar conflito entre toggle e header
+- **Helpers** para organizar a lógica
+
+---
+
+## 📝 Código Novo
+
+Substituir **todo o conteúdo** de `src/renderer/modules/componentManager/handleStates.js` por:
+
+```javascript
 import observerModule from "../../../services/observerModule";
 
 // Flag to prevent focus event during toggle change
@@ -8,7 +41,7 @@ const manageComponentActivity = () => {
   if (!componentsSection) return;
 
   const componentBoxes = Array.from(
-    componentsSection.querySelectorAll(".component-box"),
+    componentsSection.querySelectorAll(".component-box")
   );
 
   // Helper: Remove focus from all boxes except the specified one
@@ -135,3 +168,25 @@ const handleStates = {
 };
 
 export default handleStates;
+```
+
+---
+
+## ✅ Melhorias Aplicadas
+
+| Antes | Depois |
+|-------|--------|
+| Múltiplos listeners por componente | Event delegation (2 listeners no container) |
+| Conflito toggle/header | Flag `isToggleChanging` previne conflito |
+| Lógica duplicada | Helpers reutilizáveis |
+| Sem validações | Verificações de null safety |
+| Propriedades extras no notify | Apenas `id` e `value` (mais limpo) |
+
+---
+
+## 🧪 Teste
+
+1. Ativar componente → deve mostrar preview
+2. Desativar componente → deve limpar preview (sem "lixo" visual)
+3. Clicar no header de componente ativo → deve mudar foco
+4. Mudar modelo/versão → deve atualizar preview

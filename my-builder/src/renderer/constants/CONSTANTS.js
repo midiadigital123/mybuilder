@@ -1,6 +1,5 @@
 const getYear = () => new Date().getFullYear().toString();
 
-
 const CONSTANTS = {
   SUPPORTED_FILE_TYPES: [".html", ".css", ".js", ".json"],
   CSS_VARIABLES: `

@@ -8,63 +8,73 @@ class shadowDOM {
   /**
    * Insere o shadow DOM no host designado.
    */
-  insertShadowDOM ()  {
-  const shadowHost = document.getElementById("preview-shadow-host");
-  // Cria o shadow root
-  const shadowRoot = shadowHost.attachShadow({ mode: "open" });
-  shadowHost.style.height = "100%";
-  // console.log(projectState.get().colorScheme);
-  /*const updateColorsInShadowDOM = () => {
-    // Atualiza as cores no shadow DOM
-    const style = shadowRoot.querySelector('style');
-    let cssVariables = ':host {';
+  insertShadowDOM() {
+    const shadowHost = document.getElementById("preview-shadow-host");
+    // Cria o shadow root
+    const shadowRoot = shadowHost.attachShadow({ mode: "open" });
+    shadowHost.style.height = "100%";
+    // Cria um bloco de estilo no shadow DOM para os temas de cores
+    const themeStyles = document.createElement("style");
+    themeStyles.id = "theme-styles";
+    let cssThemesVariables = ":host{" + CONSTANTS.CSS_VARIABLES;
+    +"}";
+    themeStyles.textContent = cssThemesVariables;
+    shadowRoot.appendChild(themeStyles);
+
+    // Cria um bloco de estilo no shadow DOM para as cores do projeto
+    const projectStyles = document.createElement("style");
+    projectStyles.id = "project-styles";
+    let cssVariables = ":host {";
     for (const [key, value] of Object.entries(projectState.get().colorScheme)) {
-  
       cssVariables += `--${key}: ${value};`;
     }
-    cssVariables += '}';
-    cssVariables += CONSTANTS.CSS_VARIABLES;
+    cssVariables += "}";
+    projectStyles.textContent = cssVariables;
+    shadowRoot.appendChild(projectStyles);
 
-    style.textContent = cssVariables;
-  };*/
-
-  // Cria um bloco de estilo no shadow DOM para os temas de cores
-  const themeStyles = document.createElement("style");
-  themeStyles.id = "theme-styles";
-  let cssThemesVariables = ":host{" + CONSTANTS.CSS_VARIABLES; + "}";
-  themeStyles.textContent = cssThemesVariables;
-  shadowRoot.appendChild(themeStyles);
-
-
-  // Cria um bloco de estilo no shadow DOM para as cores do projeto
-  const projectStyles = document.createElement("style");
-  projectStyles.id = "project-styles";
-  let cssVariables = ":host {";
-  for (const [key, value] of Object.entries(projectState.get().colorScheme)) {
-    cssVariables += `--${key}: ${value};`;
+    // Adiciona um conteúdo inicial
+    const content = document.createElement("div");
+    content.className = "preview-content";
+    content.style.height = "100%";
+    content.setAttribute("data-bs-theme", "light"); // Tema padrão
+    content.innerHTML = "" + CONSTANTS.EMPTY_PREVIEW + "";
+    shadowRoot.appendChild(content);
+    // setThemeMode(shadowRoot);
   }
-  cssVariables += "}";
-  projectStyles.textContent = cssVariables;
-  shadowRoot.appendChild(projectStyles);
 
-  // Adiciona um conteúdo inicial
-  const content = document.createElement("div");
-  content.className = "preview-content";
-  content.style.height = "100%";
-  content.setAttribute("data-bs-theme", "light"); // Tema padrão
-  content.innerHTML = "" + CONSTANTS.EMPTY_PREVIEW + "";
-  shadowRoot.appendChild(content);
-  // setThemeMode(shadowRoot);
-};
-
-  /**
-   * Atualiza o shadow DOM com os dados do componente ativo.
-   */
   updateShadowDOM() {
-  observerModule.subscribeTo("shadowDOM:color:changed", (data) => {
-    // console.log("shadowDOM:color:changed recebido no shadowDOMController:", data);
-    const shadowHost = document.getElementById("preview-shadow-host");
-    const shadowRoot = shadowHost.shadowRoot;
+    observerModule.subscribeTo("state:changed", (data) => {
+      console.log("state:changed");
+      const shadowHost = document.getElementById("preview-shadow-host");
+      const shadowRoot = shadowHost.shadowRoot;
+
+      switch (data.type) {
+        // ========== COLORS ==========
+        case "color:updated":
+          this.updateColors(shadowRoot, data.colorKey, data.colorValue);
+          break;
+
+        // ========== COMPONENT ACTIVATED/FOCUSED/CHANGED ==========
+        case "component:activated":
+        case "component:focused":
+        case "component:modelChanged":
+        case "component:versionChanged":
+        case "component:edited":
+          console.log("component activated", data.type);
+          this.updatePreview(shadowRoot, data.files);
+          break;
+
+        // ========== COMPONENT DEACTIVATED ==========
+        case "component:deactivated":
+          console.log("component:deactivated");
+          this.clearPreview(shadowRoot);
+        default:
+          break;
+      }
+    });
+  }
+
+  updateColors(shadowRoot, colorKey, colorValue) {
     const style = shadowRoot.querySelector("#project-styles");
     let cssVariables = ":host {";
     for (const [key, value] of Object.entries(projectState.get().colorScheme)) {
@@ -72,39 +82,26 @@ class shadowDOM {
     }
     cssVariables += "}";
     style.textContent = cssVariables;
-  });
+  }
 
-  observerModule.subscribeTo("shadowDOM:cleanPreview", (data) => {
-    // console.log(
-    //   "Componente desativado, limpando o shadow DOM.",
-    //   data,
-    // );
-    // Lógica para limpar o shadow DOM quando o componente é desativado
+  updatePreview(shadowRoot, files) {
     const shadowHost = document.getElementById("preview-shadow-host");
     shadowHost.style.height = "100%";
-    const shadowRoot = shadowHost.shadowRoot;
-    const previewContent = shadowRoot.querySelector(".preview-content");
-    previewContent.innerHTML = "" + CONSTANTS.EMPTY_PREVIEW + "";
-    shadowRoot.appendChild(previewContent);
-  });
-  
-    observerModule.subscribeTo("shadowDOM:updatePreview", (data) => {
-    // console.log(
-    //   "Dados do componente mudaram, atualizar o shadow DOM se necessário.",
-    //   data,
-    // );
-    // Lógica para atualizar o shadow DOM com os novos dados do componente
-    const shadowHost = document.getElementById("preview-shadow-host");
-    shadowHost.style.height = "100%";
-    const shadowRoot = shadowHost.shadowRoot;
     const previewContent = shadowRoot.querySelector(".preview-content");
     previewContent.innerHTML = `
-    <style>${data.css}</style>
-    ${data.html}
-    <script>${data.js}<\/script>
-    `;
-    shadowRoot.appendChild(previewContent);
-  });
+    <style>${files.css}</style>
+    ${files.html}
+    <script>${files.js}<\/script>
+  `;
+  }
+
+  clearPreview(shadowRoot) {
+    console.log("clearPreview");
+    const shadowHost = document.getElementById("preview-shadow-host");
+    const previewContent = shadowRoot.querySelector(".preview-content");
+    shadowHost.style.height = "100%";
+    previewContent.innerHTML = CONSTANTS.EMPTY_PREVIEW;
+    console.log(previewContent.innerHTML);
   }
 
   setThemeMode() {
@@ -126,10 +123,8 @@ class shadowDOM {
       lightModeBtn.classList.remove("active");
       darkModeBtn.classList.add("active");
     });
-
   }
 }
-
 
 const init = () => {
   // Criar o shadow DOM na inicialização

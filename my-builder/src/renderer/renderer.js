@@ -29,20 +29,18 @@
 // import handleEditMode from './editMode.js';
 // import handlePreviewMode from './previewMode.js';
 
-import projectState from './temp/state/projectState.js';
-import formController from './modules/form/formController.js';
-import colorPickerController from './modules/colorPicker/colorPickerController.js';
-import assetUploadController from './modules/assetUpload/assetUploadController.js';
-import createStandartFolderController from './modules/createStandartFolder/createStandartFolderController.js'
-import componentManagerController from './modules/componentManager/componentManagerController.js';
-import { renderForm } from './config/renderForm.js';
-import shadowDOMController from './modules/componentManager/shadowDOM/shadowDOMController.js';
+import projectState from "./temp/state/projectState.js";
+import formController from "./modules/form/formController.js";
+import colorPickerController from "./modules/colorPicker/colorPickerController.js";
+import assetUploadController from "./modules/assetUpload/assetUploadController.js";
+import createStandartFolderController from "./modules/createStandartFolder/createStandartFolderController.js";
+import componentManagerController from "./modules/componentManager/componentManagerController.js";
+import { renderForm } from "./config/renderForm.js";
+import shadowDOMController from "./modules/componentManager/shadowDOM/shadowDOMController.js";
+import componentFileService from "../services/componentFileService.js";
 
-document.addEventListener('DOMContentLoaded', () => {
-
+document.addEventListener("DOMContentLoaded", () => {
   const init = () => {
-
-
     // Inicia os módulos
     /**
      * Módulos a serem iniciados
@@ -50,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * - Módulo do seletor de cores
      * - Módulo de upload de assets
      * - Módulo de edição de componentes
-     * - Módulo de preview ao vivo 
+     * - Módulo de preview ao vivo
      * - Módulo de monitoramento dos cambios no formulário
      * - Módulo de geração da estrutura de pastas e arquivos
      */
@@ -67,13 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
     shadowDOMController.init();
     // livePreviewController.init();
 
-
     // Inicia o módulo do formulário
-    
-
 
     // formController.loadInitialData();
-
   };
 
   init();

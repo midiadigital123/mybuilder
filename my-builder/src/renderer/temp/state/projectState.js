@@ -1,5 +1,6 @@
 import observerModule from "../../../services/observerModule.js";
 import fetchData from "../../../services/fetchData.js";
+import componentFileService from "../../../services/componentFileService.js";
 import componentsData from "../../modules/componentManager/mock/componentMockData.js";
 /**
  * component:changed
@@ -10,6 +11,8 @@ import componentsData from "../../modules/componentManager/mock/componentMockDat
  * @param {string} [key] - A chave que foi alterada (usada para 'modelChanged' e 'versionChanged').
  * @param {string} [value] - O novo valor associado à chave alterada (usado para 'modelChanged' e 'versionChanged').
  */
+
+let DEV_MODE = true; // Variável global para controle do modo de desenvolvimento
 
 class ProjectState {
   #state = {
@@ -41,31 +44,211 @@ class ProjectState {
     assets: {
       images: [],
     },
-    components: [
-      /**
-       * Lista de parametros de um componente disponível no projeto
-       * {
-       *   id: string,
-       *   name: string,
-       *   models: array,
-       *   versions: array,
-       *   focused: boolean,
-       *   isActive: boolean,
-       *   selectedModel: string || null,
-       *   selectedVersion: string || null,
-       *   alias: string,
-       *   html: string,
-       *   css: string,
-       *   js: string
-       * }
-       */
-    ],
-    actualMode: "preview", // edit | preview
+    components: [],
+    /**
+     * Lista de parametros de um componente disponível no projeto
+     * {
+     *   id: string,
+     *   name: string,
+     *   models: array,
+     *   versions: array,
+     *   focused: boolean,
+     *   isActive: boolean,
+     *   selectedModel: string || null,
+     *   selectedVersion: string || null,
+     *   alias: string,
+     * }
+     */
+    actualMode: "preview",
   };
 
   constructor() {}
 
-  // Preenche o estado com dados mockados no início do programa
+  // =======================
+  // Getters
+  // =======================
+
+  get() {
+    return structuredClone(this.#state);
+  }
+
+  #findComponent(id) {
+    return this.#state.components.find((comp) => comp.id === id);
+  }
+
+  #findComponentByAlias(alias) {
+    return this.#state.components.find((comp) => comp.alias === alias);
+  }
+
+  getFocusedComponent() {
+    return this.#state.components.find((comp) => comp.focused === true);
+  }
+
+  // ============================================
+  // NOTIFICAÇÃO UNIFICADA
+  // ============================================
+
+  #notify(type, payload = {}) {
+    observerModule.sendNotify("state:changed", { type, ...payload });
+  }
+
+  // ============================================
+  // HANDLERS: COURSE INFO
+  // ============================================
+
+  #handleCourseInfoChange({ id, value }) {
+    if (this.#state[id] === undefined) return;
+
+    this.#state[id] = value;
+    this.#notify("courseInfo:updated", { id, value });
+  }
+
+  // ============================================
+  // HANDLERS: COLORS
+  // ============================================
+
+  #handleColorChange = ({ colorKey, colorValue }) => {
+    if (this.#state.colorScheme[colorKey] === undefined) return;
+
+    this.#state.colorScheme[colorKey] = colorValue;
+    this.#notify("color:updated", { colorKey, colorValue });
+  };
+
+  // ============================================
+  // HANDLERS: COMPONENTS
+  // ============================================
+
+  #handleComponentActivation = async ({ id, value }) => {
+    const component = this.#findComponent(id);
+    if (!component) return;
+
+    component.isActive = value;
+
+    if (component.isActive) {
+      console.log("component.isActive", component.isActive);
+      // Fetch files from server and create temp files
+      const filesData = await fetchData(component);
+      const result = await componentFileService.create(component.alias, {
+        html: filesData.html,
+        css: filesData.css,
+        js: filesData.js,
+      });
+
+      if (result.success) {
+        this.#setFocusedComponent(id);
+        this.#notify("component:activated", {
+          id,
+          alias: component.alias,
+          files: {
+            html: filesData.html,
+            css: filesData.css,
+            js: filesData.js,
+          },
+        });
+      }
+    } else {
+      // Delete temp files
+      await componentFileService.delete(component.alias);
+      component.focused = false;
+      this.#notify("component:deactivated", { id, alias: component.alias });
+    }
+  };
+
+  #handleComponentFocus = ({ id, value }) => {
+    const component = this.#findComponent(id);
+    if (!component || !component.isActive) return;
+
+    this.#setFocusedComponent(id);
+  };
+
+  #handleModelChange = async ({ id, value: selectedModel }) => {
+    const component = this.#findComponent(id);
+    if (!component) return;
+
+    component.selectedModel = selectedModel;
+
+    // Fetch new files and overwrite temp files
+    const filesData = await fetchData(component);
+    await componentFileService.create(component.alias, {
+      html: filesData.html,
+      css: filesData.css,
+      js: filesData.js,
+    });
+
+    this.#notify("component:modelChanged", {
+      id,
+      alias: component.alias,
+      selectedModel,
+      files: { html: filesData.html, css: filesData.css, js: filesData.js },
+    });
+  };
+
+  #handleVersionChange = async ({ id, value: selectedVersion }) => {
+    const component = this.#findComponent(id);
+    if (!component) return;
+
+    component.selectedVersion = selectedVersion;
+
+    // Fetch new files and overwrite temp files
+    const filesData = await fetchData(component);
+    await componentFileService.create(component.alias, {
+      html: filesData.html,
+      css: filesData.css,
+      js: filesData.js,
+    });
+
+    this.#notify("component:versionChanged", {
+      id,
+      alias: component.alias,
+      selectedVersion,
+      files: { html: filesData.html, css: filesData.css, js: filesData.js },
+    });
+  };
+
+  #handleComponentEdit = async ({ alias, fileType, content }) => {
+    const result = await componentFileService.update(alias, fileType, content);
+
+    if (result.success) {
+      // Read updated files to notify
+      const filesResult = await componentFileService.read(alias);
+      if (filesResult.success && component.isActive) {
+        this.#notify("component:edited", {
+          alias,
+          fileType,
+          files: filesResult.files,
+        });
+      }
+    }
+  };
+
+  // ============================================
+  // HELPERS
+  // ============================================
+
+  #setFocusedComponent(id) {
+    // Remove focus from all
+    this.#state.components.forEach((comp) => {
+      comp.focused = false;
+    });
+
+    // Set focus on specific component
+    const component = this.#findComponent(id);
+    if (!component) return;
+
+    component.focused = true;
+
+    // Notify with file data
+    componentFileService.read(component.alias).then((result) => {
+      if (result.success && component.isActive) {
+        this.#notify("component:focused", {
+          id,
+          alias: component.alias,
+          files: result.files,
+        });
+      }
+    });
+  }
+
   #fillStateWithMockData() {
     componentsData.forEach((component) => {
       this.#state.components.push({
@@ -78,315 +261,51 @@ class ProjectState {
         isActive: component.isActive,
         selectedModel: component.selectedModel,
         selectedVersion: component.selectedVersion,
-        html: component.html,
-        css: component.css,
-        js: component.js,
       });
     });
-    // console.log(this.get());
   }
 
-  // Função para retornar uma cópia do estado atual
-  get() {
-    return structuredClone(this.#state);
+  // ============================================
+  // EVENT REGISTRATION
+  // ============================================
+
+  #registerEventHandlers() {
+    observerModule.subscribeTo(
+      "form:inputChanged",
+      this.#handleCourseInfoChange,
+    );
+    observerModule.subscribeTo("color:changed", this.#handleColorChange);
+    observerModule.subscribeTo(
+      "component:setActivation",
+      this.#handleComponentActivation,
+    );
+    observerModule.subscribeTo(
+      "component:setFocus",
+      this.#handleComponentFocus,
+    );
+    observerModule.subscribeTo("component:setModel", this.#handleModelChange);
+    observerModule.subscribeTo(
+      "component:setVersion",
+      this.#handleVersionChange,
+    );
+    observerModule.subscribeTo("component:edit", this.#handleComponentEdit);
   }
 
-  // Método para atualizar os dados básicos do formulário
-  // É chamado sempre que o formulário notifica uma mudança
-  #updateCourseInfo(id, value) {
-    if (this.#state[id] !== undefined) {
-      this.#state[id] = value;
-      observerModule.sendNotify("state:changed", {
-        type: "courseInfo",
-        id,
-        value,
-      });
-    }
-  }
+  // ============================================
+  // INITIALIZATION
+  // ============================================
 
-  // Método para atualizar o esquema de cores
-  // É chamado sempre que o seletor de cores notifica uma mudança
-  #updateColor(colorKey, colorValue) {
-    if (this.#state.colorScheme[colorKey] !== undefined) {
-      this.#state.colorScheme[colorKey] = colorValue;
-      observerModule.sendNotify("state:changed", {
-        type: "colorScheme",
-        colorKey,
-        colorValue,
-      });
-      // Update shadowDOM
-      observerModule.sendNotify("shadowDOM:color:changed", {
-        colorKey,
-        colorValue,
-      });
-    }
-  }
-
-  /**
-   *
-   * Toda vez que #reloadComponentFiles é chamado, ele busca os arquivos do componente no backend
-   * e atualiza o estado do projeto com os novos conteúdos.
-   *
-   * Também dispara notificações específicas para que o shadow DOM e outras partes do sistema
-   * possam reagir às mudanças.
-   *
-   */
-
- 
-
-  #fetchComponentFiles = async (componentId, value) => {
-    if (value == false) {
-      this.#updateComponentState(
-            "component:cleanFiles",
-            componentId,
-            "html", "",
-          );
-      this.#updateComponentState(
-            "component:cleanFiles",
-            componentId,
-            "css",
-            "",
-          );
-      this.#updateComponentState(
-            "component:cleanFiles",
-            componentId,
-            "js",
-            "",
-          );
-    }
-    // console.log(
-    //   "[ProjectState] Buscando arquivos para o componente:",
-    //   componentId,
-    // );
-    try {
-      const component = this.#find(componentId);
-      if (!component) {
-        console.warn(
-          `[ProjectState] Componente com ID ${componentId} não encontrado para recarregar arquivos.`,
-        );
-        return;
-      }
-      const newData = await fetchData(component);
-    
-
-      // Atualiza o estado para cada tipo de arquivo de forma dinâmica
-      const fileTypes = ["html", "css", "js"];
-      fileTypes.forEach((fileType) => {
-        if (newData[fileType] !== undefined) {
-          this.#updateComponentState(
-            "component:filesLoaded",
-            componentId,
-            fileType,
-            newData[fileType],
-          );
-        }
-      });
-    } catch (error) {
-      console.error(
-        `[ProjectState] Falha ao recarregar arquivos para o componente ${componentId}:`,
-        error,
-      );
-    }
-  };
-
-  #updateComponenteTempData(componentName, html, css, js) {
-    // if (this.#state.colorScheme[colorKey] !== undefined) {
-    //   this.#state.colorScheme[colorKey] = colorValue;
-    //   observerModule.sendNotify('state:changed', { type: 'colorScheme', colorKey, colorValue });
-    // }
-  }
-
-  #updateFocusedComponente(componentId, value) {
-    // Pega todos os componentes
-    const allComponents = this.#state.components;
-    // Define focused como false para todos
-    allComponents.forEach((comp) => {
-      comp.focused = false;
-    });
-
-    // Define focused como true para o componente específico
-    const component = this.#find(componentId);
-    if (!component) return;
-    component.focused = value;
-    observerModule.sendNotify("shadowDOM:updatePreview", {
-      componentId: componentId,
-      html: component.html,
-      css: component.css,
-      js: component.js,
-    });
-  }
-
-  #find(id) {
-    return this.#state.components.find((comp) => comp.id === id);
-  }
-
-  #updateComponentState(type, id, key, value) {
-    // console.log(type, id, key, value);
-    const component = this.#find(id);
-    if (!component) return;
-    component[key] = value;
-    observerModule.sendNotify("state:changed", {
-      type: type,
-      id: id,
-      key: key,
-      value: value,
-    });
-    // console.log(this.#state);
-  }
-
-  #updateData() {}
-
-  #updateShadowDOMForComponent(id) {}
-
-  // #loadComponentFilesToTemp(id) {
-  //   window.api.loadComponentFilesToTemp(id);
-  // }
-
-  #getContentFiles(id) {
-    const component = this.#find(id);
-    if (!component) return;
-    return {
-      html: component.html,
-      css: component.css,
-      js: component.js,
-    };
-  }
-
-  // O método init onde a classe se inscreve para ouvir eventos do MUNDO EXTERNO
   init() {
-    // console.log("[ProjectState] Inicializando e ouvindo eventos...");
+    // Desenvolvimento: usa mock local
+    if (DEV_MODE) {
+      this.#fillStateWithMockData();
+    }
+    // Produção: busca de API
+    else {
+      // this.#loadComponentsFromAPI();
+    }
 
-    /**
-     * Preenche o estado com dados mockados no início do programa
-     */
-    this.#fillStateWithMockData();
-
-    /**
-     * Ouve mudanças nos inputs do formulário principal
-     */
-    observerModule.subscribeTo("form:inputChanged", (data) => {
-      const { id, value } = data;
-      // console.log(`[ProjectState] Ouvi 'form:inputChanged':`, data);
-      this.#updateCourseInfo(id, value);
-    });
-
-    /**
-     * Ouve mudanças nas cores do tema
-     */
-    observerModule.subscribeTo("color:changed", (data) => {
-      // console.log(`[ProjectState] Ouvi 'color:changed':`, data);
-      this.#updateColor(data.colorKey, data.colorValue);
-      // Atualiza o shadow DOM com as novas cores
-      // TODO: Colocar aqui o update do shadow DOM.
-      // FIXME:
-    });
-
-    observerModule.subscribeTo("component:updateInEditMode", (data) => {
-      // Servirá para enviar ao backend os arquivos do componente já com a modificação.
-      // Depois que o usuário clicou em Salvar(dentro do customizar código), o renderer vai disparar
-      // algo como observerModule.sendNotify('component:updateInEditMode', { component: componentName ,html: html, css: css, js: js })
-      this.#updateComponenteTempData(
-        data.componentName,
-        data.html,
-        data.css,
-        data.js,
-      );
-    });
-
-
-    // observerModule.subscribeTo("component:changed", (data) => {
-    //   const { type, id, key, value } = data;
-    //   this.#updateComponentState(type, id, key, value);
-    //   if (
-    //     type === "modelChanged" ||
-    //     type === "versionChanged" ||
-    //     type === "activation"
-    //   ) {
-    //     this.#reloadComponentFiles(id, value);
-    //   }
-
-    //   if (type === "focused") {
-    //     this.#updateFocusedComponente(id, value);
-    //   }
-    // });
-
-    /**
-     * Na ativação do componente preciso:
-     * 1) atualizar o estado isActive do componente
-     * 2) atualizar o estado focused do componente
-     * 3) buscar os arquivos da versão ativa 
-     * e carregá-los no shadowDOM.
-     * 
-     * No setFocus apenas atualizo o shadowDOM com o conteúdo do componente focado.
-     * 
-     * Na mudança de modelo ou versão, preciso buscar os arquivos correspondentes
-     * e atualizar o shadowDOM.
-     */
-
-    observerModule.subscribeTo("component:setActivation", async (data) => {
-      // console.log("setActivation")
-      // Atualiza o estado isActive do componente
-      this.#updateComponentState(
-        "setActivation",
-        data.id,
-        "isActive",
-        data.value,
-      );
-
-      // console.log(data.id, data.value)
-      // Atualiza o state com os arquivos do componente
-      await this.#fetchComponentFiles(data.id, data.value);
-      if (data.value === false) {
-        observerModule.sendNotify("shadowDOM:cleanPreview", {});
-      } else {
-        // console.log("caiu aquii!!")
-        this.#updateFocusedComponente(data.id, data.value);
-      }
-    });
-
-    observerModule.subscribeTo("component:setFocus", (data) => {
-      // console.log("setFocus")
-      this.#updateComponentState(
-        "setFocus",
-        data.id,
-        "focused",
-        data.value,
-      );
-      this.#updateFocusedComponente(data.id, data.value);
-    });
-
-    observerModule.subscribeTo("component:setModel", async (data) => {
-      // console.log("setModel")
-      // Atualiza o estado focused do componente
-      this.#updateComponentState(
-        "setModel",
-        data.id,
-        "selectedModel",
-        data.value,
-      );
-
-      // Atualiza o state com os arquivos do componente
-      await this.#fetchComponentFiles(data.id, data.value);
-      
-    });
-
-    observerModule.subscribeTo("component:setVersion", async (data) => {
-      //  console.log("setVersion")
-      // Atualiza o estado focused do componente
-      this.#updateComponentState(
-        "setVersion",
-        data.id,
-        "selectedVersion",
-        data.value,
-      );
-
-      // Atualiza o state com os arquivos do componente
-      await this.#fetchComponentFiles(data.id, data.value);
-      
-      });
-     
-
-    // ... outras inscrições
+    this.#registerEventHandlers();
   }
 }
 
