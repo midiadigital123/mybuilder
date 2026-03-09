@@ -29,4 +29,7 @@ contextBridge.exposeInMainWorld("api", {
     ipcRenderer.invoke("component:deleteFiles", alias, year),
 
   listComponentFiles: (year) => ipcRenderer.invoke("component:listFiles", year),
+  // Novos handlers FTP
+  listFTPComponents: () => ipcRenderer.invoke("ftp:list-components"),
+  testFTPConnection: () => ipcRenderer.invoke("ftp:test-connection"),
 });

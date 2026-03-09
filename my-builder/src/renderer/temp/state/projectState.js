@@ -295,18 +295,34 @@ class ProjectState {
   // INITIALIZATION
   // ============================================
 
-  init() {
-    // Desenvolvimento: usa mock local
-    if (DEV_MODE) {
+  async init() {
+    if (!DEV_MODE) {
+      console.log("[ProjectState] Modo DEV: usando dados mockados");
       this.#fillStateWithMockData();
-    }
-    // Produção: busca de API
-    else {
-      // this.#loadComponentsFromAPI();
+    } else {
+      console.log(
+        "[ProjectState] Modo PRODUÇÃO: buscando componentes do FTP...",
+      );
+
+      try {
+        const result = await window.api.listFTPComponents();
+
+        if (result.success) {
+          this.#state.components = result.data;
+          console.log(
+            `[ProjectState] ✓ ${result.data.length} componentes carregados`,
+          );
+        } else {
+          throw new Error(result.error || "Falha ao buscar componentes");
+        }
+      } catch (error) {
+        console.error("[ProjectState] ✗ Erro FTP:", error);
+        console.warn("[ProjectState] Fallback: usando mock");
+        this.#fillStateWithMockData();
+      }
     }
 
     this.#registerEventHandlers();
-    console.log("ProjectState initialized with state:", this.#state);
   }
 }
 

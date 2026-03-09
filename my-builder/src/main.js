@@ -4,6 +4,11 @@ import started from "electron-squirrel-startup";
 const { ipcMain } = require("electron");
 const fs = require("fs");
 const fss = require("fs").promises;
+  import {
+    listarComponentesDisponiveis,
+    verificarCredenciais,
+    testarConexao,
+  } from "./services/componentDiscovery.js";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -233,6 +238,37 @@ const handleListComponentFiles = async (_, year) => {
     return { success: false, error: error.message };
   }
 };
+
+// ========== NOVOS HANDLERS FTP ==========
+ipcMain.handle("ftp:list-components", async () => {
+  try {
+    if (!verificarCredenciais()) {
+      throw new Error(
+        "Credenciais FTP não configuradas. Configure o arquivo .env",
+      );
+    }
+
+    const components = await listarComponentesDisponiveis();
+    return { success: true, data: components };
+  } catch (error) {
+    console.error("[Main] Erro ao listar componentes:", error);
+    return {
+      success: false,
+      error: error.message,
+      data: [],
+    };
+  }
+});
+
+ipcMain.handle("ftp:test-connection", async () => {
+  try {
+    const isConnected = await testarConexao();
+    return { success: isConnected };
+  } catch (error) {
+    console.error("[Main] Erro ao testar conexão:", error);
+    return { success: false, error: error.message };
+  }
+});
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

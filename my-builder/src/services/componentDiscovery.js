@@ -29,7 +29,8 @@ dotenv.config();
 
 // Configuração do FTP
 const FTP_CONFIG = {
-  host: process.env.FTP_HOST || "recursos-moodle.caeddigital.net",
+  host: process.env.FTP_HOST || "10.10.9.27",
+  port: parseInt(process.env.FTP_PORT) || 6798,
   user: process.env.FTP_USER,
   password: process.env.FTP_PASS,
   secure: process.env.FTP_SECURE === "true",
@@ -158,12 +159,14 @@ export async function listarComponentesDisponiveis() {
 export function verificarCredenciais() {
   const credenciaisOK = !!(
     process.env.FTP_HOST &&
+    process.env.FTP_PORT &&
     process.env.FTP_USER &&
     process.env.FTP_PASS
   );
 
   if (!credenciaisOK) {
     console.warn("[FTP] ⚠ Credenciais não configuradas no arquivo .env");
+    console.warn("[FTP] Necessário: FTP_HOST, FTP_PORT, FTP_USER, FTP_PASS");
   }
 
   return credenciaisOK;
