@@ -6,6 +6,7 @@ let isToggleChanging = false;
 const manageComponentActivity = () => {
   const componentsSection = document.getElementById("components-section");
   if (!componentsSection) return;
+  console.log("Initializing component activity management...");
 
   const componentBoxes = Array.from(
     componentsSection.querySelectorAll(".component-box"),
